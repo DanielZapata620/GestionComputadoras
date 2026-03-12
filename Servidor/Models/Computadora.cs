@@ -13,7 +13,7 @@ namespace Servidor.Models
         public IPAddress IP { get; set; } = null!;
         public int Puerto { get; set; }
         public bool Encendida { get; set; }
-        public bool Apagada { get; set; } 
+        public bool Conexion { get; set; } 
         
     }
 }
