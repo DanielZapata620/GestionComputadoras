@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Threading;
 
@@ -25,12 +26,24 @@ namespace Servidor.Viewmodels
         Dispatcher hiloUI;
         public ServidorViewmodel()
         {
-            servidorService.IniciarServidor();
+            
             hiloUI = Dispatcher.CurrentDispatcher;
-            servidorService.ComputadoraRegistrada += ServidorService_ComputadoraRegistrada;
-            servidorService.VerificarConexion += ServidorService_VerificarConexion;
+            servidorService.ComputadoraRegistrada += ServidorService_ComputadoraRegistrada;//
+            servidorService.VerificarConexion += ServidorService_VerificarConexion;//
             VerificarInternetCommand = new RelayCommand<string>(VerificarInternet);
+            servidorService.ActualizarListaComputadoras += ServidorService_ActualizarListaComputadoras;
             ApagarCommand = new RelayCommand<string>(ApagarComputadora);
+
+            servidorService.IniciarServidor();
+        }
+
+        private void ServidorService_ActualizarListaComputadoras()
+        {
+            hiloUI.BeginInvoke(() =>
+            {
+                ListaComputadoras.Clear();
+                servidorService.ListaComputadoras.ForEach(x => ListaComputadoras.Add(x));
+            });
         }
 
         private void ApagarComputadora(string? identificador)

@@ -10,7 +10,7 @@ namespace Servidor.Models
 
         public string Identificador { get; set; } = null!;
 
-        public IPAddress IP { get; set; } = null!;
+        public string IP { get; set; } = null!;
         public int Puerto { get; set; }
         public bool Encendida { get; set; }
         public bool Conexion { get; set; } 

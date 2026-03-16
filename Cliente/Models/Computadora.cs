@@ -7,5 +7,6 @@ namespace Cliente.Models
     public class Computadora
     {
         public string Identificador { get; set; } = null!;
+        public bool PednienteRegistrar { get; set; }
     }
 }

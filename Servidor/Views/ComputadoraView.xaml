@@ -1,0 +1,146 @@
+﻿<UserControl x:Class="Servidor.Views.ComputadoraView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Servidor.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Border CornerRadius="10"
+            Background="#2B1F1F"
+            Padding="12"
+            Margin="0"
+            Height="250"
+            Width="150">
+
+        <StackPanel Width="150" HorizontalAlignment="Center">
+
+            <!-- IMAGEN -->
+            <Image Width="80"
+                   Height="80"
+                   Margin="0,0,0,8"
+                   Stretch="Uniform"
+                   Source="/Images/pcIcon.png">
+
+                <Image.Effect>
+                    <DropShadowEffect Color="White"
+                                      BlurRadius="1"
+                                      ShadowDepth="1"
+                                      Opacity="1"/>
+                </Image.Effect>
+
+            </Image>
+
+            <!-- NOMBRE -->
+            <TextBlock Text="{Binding Nombre}"
+                       FontSize="15"
+                       Foreground="White"
+                       HorizontalAlignment="Center"/>
+
+            <!-- CODIGO -->
+            <TextBlock Text="{Binding Codigo}"
+                       FontSize="11"
+                       Foreground="#BDBDBD"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,10"/>
+
+            <!-- ESTADOS -->
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        Margin="0,0,0,10">
+
+                <!-- ENCENDIDA -->
+                <StackPanel Margin="10,0">
+
+                    <TextBlock Text="ENCENDIDA"
+                               FontSize="9"
+                               Foreground="White"
+                               HorizontalAlignment="Center"/>
+
+                    <Ellipse Width="10"
+                             Height="10"
+                             Margin="0,3,0,0"
+                             HorizontalAlignment="Center">
+
+                        <Ellipse.Style>
+                            <Style TargetType="Ellipse">
+
+                                <Setter Property="Fill" Value="Red"/>
+
+                                <Style.Triggers>
+
+                                    <DataTrigger Binding="{Binding Encendida}" Value="True">
+                                        <Setter Property="Fill" Value="#00D26A"/>
+                                    </DataTrigger>
+
+                                </Style.Triggers>
+
+                            </Style>
+
+                        </Ellipse.Style>
+
+                    </Ellipse>
+
+                </StackPanel>
+
+                <!-- INTERNET -->
+                <StackPanel Margin="10,0">
+
+                    <TextBlock Text="INTERNET"
+                               FontSize="9"
+                               Foreground="White"
+                               HorizontalAlignment="Center"/>
+
+                    <Ellipse Width="10"
+                             Height="10"
+                             Margin="0,3,0,0"
+                             HorizontalAlignment="Center">
+
+                        <Ellipse.Style>
+                            <Style TargetType="Ellipse">
+
+                                <Setter Property="Fill" Value="Red"/>
+
+                                <Style.Triggers>
+
+                                    <DataTrigger Binding="{Binding Conexion}" Value="True">
+                                        <Setter Property="Fill" Value="#00D26A"/>
+                                    </DataTrigger>
+
+                                </Style.Triggers>
+
+                            </Style>
+
+                        </Ellipse.Style>
+
+                    </Ellipse>
+
+                </StackPanel>
+
+            </StackPanel>
+
+            <!-- BOTONES -->
+            <Button Content="VERIFICAR INTERNET"
+                    Height="24"
+                    Width="150"
+                    Margin="0,3"
+                    FontSize="10"
+                    Background="#4B3C3C"
+                    Foreground="White"
+                    BorderThickness="0"
+                    Command="{Binding DataContext.VerificarInternetCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                    CommandParameter="{Binding Identificador}"/>
+
+            <Button Content="APAGAR"
+                    Height="24"
+                    FontSize="10"
+                    Background="#4B3C3C"
+                    Foreground="White"
+                    BorderThickness="0"
+                    Command="{Binding DataContext.ApagarCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                    CommandParameter="{Binding Identificador}"/>
+
+        </StackPanel>
+
+    </Border>
+</UserControl>

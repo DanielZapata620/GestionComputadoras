@@ -15,7 +15,7 @@ namespace Cliente.Service
 {
     public class ClienteService
     {
-
+        //Porperdad de registro pedniente para controlar las vistas
         Computadora Computadora { get; set; }
         UdpClient Cliente = new();
 
@@ -47,28 +47,19 @@ namespace Cliente.Service
 
 
                 }
-                if (comandoSeparado[0] == "APROBADO")
+                if (comandoSeparado[0] == "APROBAR")
                 {
                     string json = JsonSerializer.Serialize(Computadora);
-                    string rutaArchivo = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "computadora.json");
-                    File.WriteAllText(rutaArchivo, json);
+                    
+                    File.WriteAllText("computadora.jsonw", json);
                     Aprobado?.Invoke();
 
                 }
                 if (comandoSeparado[0] == "CONEXION")
                 {
-                    PingReply respuesta = ping.Send("8.8.8.8", 3000);
-                    bool Conexion;
-                    if (respuesta.Status == IPStatus.Success)
-                    {
-                        Conexion = true;
-                    }
-                    else
-                    {
-                        Conexion = false;
-                    }
+                    bool Conexion = PingDNS();
 
-                    var comandoRespuesta =$"RESPUESTA|{Computadora.Identificador}|{Conexion}";
+                    var comandoRespuesta = $"RESPUESTA|{Computadora.Identificador}|{Conexion}";
                     EnviarMensaje(comandoRespuesta);
                 }
 
@@ -77,8 +68,35 @@ namespace Cliente.Service
 
                     Process.Start("shutdown", "/s /t 0");
                 }
+
+                if (comandoSeparado[0] == "STATUS")
+                {
+                    //VERIFICAR
+                    bool Conexion = PingDNS();
+
+                    var comandoRespuesta = $"RESPUESTA|{Computadora.Identificador}|{Conexion}";
+                    EnviarMensaje(comandoRespuesta);
+                }
+
+                
                 //Comando Aprobar para guardar el identificador y cambiar de vista 
             }
+        }
+
+        private bool PingDNS()
+        {
+            PingReply respuesta = ping.Send("8.8.8.8", 3000);
+            bool Conexion;
+            if (respuesta.Status == IPStatus.Success)
+            {
+                Conexion = true;
+            }
+            else
+            {
+                Conexion = false;
+            }
+
+            return Conexion;
         }
 
         public void Conectar(string IpServidor, Computadora Compu)
@@ -106,5 +124,7 @@ namespace Cliente.Service
             Cliente.Send(buffer, buffer.Length, remoto);
 
         }
+
+       
     }
 }

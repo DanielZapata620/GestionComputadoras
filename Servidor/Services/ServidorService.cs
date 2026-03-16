@@ -1,17 +1,20 @@
 ﻿using Servidor.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection.Metadata;
 using System.Text;
+using System.Text.Json;
 
 
 namespace Servidor.Services;
 
 public class ServidorService
 {
+    //Propiedad para  
     public List<Computadora> ListaComputadoras { get; set; } = new();
 
     public UdpClient Servidor { get; set; }
@@ -20,6 +23,7 @@ public class ServidorService
 
     public event Action<Computadora>? ComputadoraRegistrada;
     public event Action<List<Computadora>>? VerificarConexion;
+    public event Action? ActualizarListaComputadoras;
 
 
     public void IniciarServidor()
@@ -30,6 +34,13 @@ public class ServidorService
         Thread hilo = new(RecibirMensajes);
         hilo.IsBackground = true;
         hilo.Start();
+
+        ListaComputadoras.Clear();
+        ListaComputadoras = LeerJson();
+        VerificarStatusGlobal();
+
+        ActualizarListaComputadoras?.Invoke();
+
 
     }
 
@@ -51,7 +62,7 @@ public class ServidorService
                 {
                     var error = "Eliga otro identifiacdor , ya que el que intenta usar ya se encuentra registrado";
                     var comandoEnviar = $"RECHAZAR|{error}";
-                    EnviarMensaje(comandoEnviar, clientEP.Address, clientEP.Port);
+                    EnviarMensaje(comandoEnviar, clientEP.Address.ToString(), clientEP.Port);
                 }
                 else
                 {
@@ -59,17 +70,20 @@ public class ServidorService
                     Computadora compu = new()
                     {
                         Identificador = comandoSeparado[1],
-                        IP = clientEP.Address,
+                        IP = clientEP.Address.ToString(),
                         Puerto = clientEP.Port,
                         Encendida = true
                     };
 
 
-
+                    var comandoEnviar = $"APROBAR";
 
                     ListaComputadoras.Add(compu);
                     ComputadoraRegistrada?.Invoke(compu);
 
+                    string json = JsonSerializer.Serialize(ListaComputadoras);
+                   
+                    File.WriteAllText("computadoras.json", json);
 
 
                 }
@@ -90,15 +104,18 @@ public class ServidorService
 
             //if (comandoSeparado[0] == "REGISTRAR" && comandoSeparado.Length > 1)
         }
-    }
 
-   
-
-    public void EnviarMensaje(string commando,  IPAddress ip, int port)
-    {
        
 
-            IPEndPoint remoto = new IPEndPoint(ip, port);
+    }
+
+
+
+    public void EnviarMensaje(string commando,  string ip, int port)
+    {
+
+        IPAddress.TryParse(ip, out IPAddress? ipServidor);
+            IPEndPoint remoto = new IPEndPoint(ipServidor, port);
            
             byte[] buffer = Encoding.UTF8.GetBytes(commando);
 
@@ -127,6 +144,7 @@ public class ServidorService
         var compuEncontrada = ListaComputadoras.FirstOrDefault(x => x.Identificador == Identificador && x.Encendida == true);
         if (compuEncontrada != null)
         {
+
             EnviarMensaje("CONEXION", compuEncontrada.IP, compuEncontrada.Puerto);
         }
     }
@@ -143,8 +161,30 @@ public class ServidorService
     }
 
 
+    private List<Computadora> LeerJson()
+    {
+        if (File.Exists("computadoras.json"))
+        {
+            string json = File.ReadAllText("computadoras.json");
+            return JsonSerializer.Deserialize<List<Computadora>>(json) ?? new List<Computadora>();
+        }
+        return new List<Computadora>();
+    }
 
-
+    //public void DescubrirComputadorasBroadcast()
+    //{
+    //    Servidor.EnableBroadcast = true;
+    //    EnviarMensaje("DESCUBRIR", "255.255.255.255", puerto);
+    //}
+    public void VerificarStatusGlobal() 
+    {
+        foreach (var compu in ListaComputadoras)
+        {
+            compu.Encendida = false;
+            compu.Conexion = false;
+            EnviarMensaje("STATUS", compu.IP, compu.Puerto);
+        }
+    }
 
 
 

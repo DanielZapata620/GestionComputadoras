@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:Cliente.Views"
         xmlns:viewmodels="clr-namespace:Cliente.Viewmodels"
         xmlns:local="clr-namespace:Cliente"
         mc:Ignorable="d"
@@ -10,11 +11,44 @@
     <Window.DataContext>
         <viewmodels:ClienteViewmodel></viewmodels:ClienteViewmodel>
     </Window.DataContext>
-    <Grid>
-        <TextBox HorizontalAlignment="Center" Margin="0,174,0,0" TextWrapping="Wrap" Text="{Binding IpServidor}" VerticalAlignment="Top" Width="120" />
-        <TextBox HorizontalAlignment="Center" Margin="0,229,0,0" TextWrapping="Wrap" Text="{Binding Compu.Identificador}" VerticalAlignment="Top" Width="120"/>
-        <Button Content="Button" HorizontalAlignment="Left" Margin="340,280,0,0" VerticalAlignment="Top" Height="27" Width="110" Command="{Binding RegistrarCommand}"/>
-        <Label Content="{Binding Error}"  HorizontalAlignment="Left" Margin="395,91,0,0" VerticalAlignment="Top"/>
 
+    <Grid>
+        <ContentControl>
+
+            <ContentControl.Style>
+                <Style TargetType="ContentControl">
+
+                    <Setter Property="Content">
+                        <Setter.Value>
+                            <views:RegistroComputadoraView/>
+                        </Setter.Value>
+                    </Setter>
+
+                    <Style.Triggers>
+
+                        <DataTrigger Binding="{Binding VistaActual}" Value="ServidorEncendido">
+                            <Setter Property="Content">
+                                <Setter.Value>
+                                    <views:ConexionView></views:ConexionView>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding VistaActual}" Value="ServidorApagado">
+                            <Setter Property="Content">
+                                <Setter.Value>
+                                    <views:DesconexionView></views:DesconexionView>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+
+                    </Style.Triggers>
+
+                </Style>
+            </ContentControl.Style>
+
+        </ContentControl>
+
+   
     </Grid>
 </Window>

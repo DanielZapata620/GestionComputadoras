@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:Servidor.Views"
         xmlns:vm="clr-namespace:Servidor.Viewmodels"
         xmlns:local="clr-namespace:Servidor"
         x:Name="ventana"
@@ -12,13 +13,15 @@
     <Window.DataContext>
         <vm:ServidorViewmodel></vm:ServidorViewmodel>
     </Window.DataContext>
-    <Grid>
+
+    <views:PanelView></views:PanelView>
+    <!--<Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- BARRA SUPERIOR CON BOTONES -->
+        --><!-- BARRA SUPERIOR CON BOTONES --><!--
         <Border Grid.Row="0" Background="#2C3E50" Padding="10">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
 
@@ -42,7 +45,7 @@
             </StackPanel>
         </Border>
 
-        <!-- LISTA DE COMPUTADORAS -->
+        --><!-- LISTA DE COMPUTADORAS --><!--
         <ListView Grid.Row="1" Margin="10" ItemsSource="{Binding ListaComputadoras}">
             <ListView.ItemTemplate>
                 <DataTemplate>
@@ -61,25 +64,25 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
-                            <!-- Identificador -->
+                            --><!-- Identificador --><!--
                             <StackPanel>
                                 <TextBlock Text="Identificador:" FontWeight="Bold"/>
                                 <TextBlock Text="{Binding Identificador}" FontSize="14"/>
                             </StackPanel>
 
-                            <!-- Estatus -->
+                            --><!-- Estatus --><!--
                             <StackPanel Grid.Column="1" HorizontalAlignment="Center">
                                 <TextBlock Text="Estatus:" FontWeight="Bold"/>
                                 <TextBlock Text="{Binding Encendida}"/>
                             </StackPanel>
 
-                            <!-- Internet -->
+                            --><!-- Internet --><!--
                             <StackPanel Grid.Column="2" HorizontalAlignment="Center">
                                 <TextBlock Text="Internet:" FontWeight="Bold"/>
                                 <TextBlock Text="{Binding Conexion}"/>
                             </StackPanel>
 
-                            <!-- Botón Apagar -->
+                            --><!-- Botón Apagar --><!--
                             <Button Grid.Column="3"
                                 Content="Apagar"
                                 Padding="10,5"
@@ -103,5 +106,5 @@ CommandParameter="{Binding Identificador}" />
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-    </Grid>
+    </Grid>-->
 </Window>
