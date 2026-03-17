@@ -16,7 +16,7 @@ namespace Cliente.Views
     /// <summary>
     /// Lógica de interacción para ConexionView.xaml
     /// </summary>
-    public partial class ConexionView : Page
+    public partial class ConexionView : UserControl
     {
         public ConexionView()
         {

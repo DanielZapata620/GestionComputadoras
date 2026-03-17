@@ -8,22 +8,58 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace Cliente.Viewmodels
 {
-    public class ClienteViewmodel
+    public class ClienteViewmodel: INotifyPropertyChanged
     {
 
         public ICommand RegistrarCommand { get; set; }
         public string Error { get; set; }
 
         public Computadora Compu { get; set; } = new();
+
+        public string VistaActual { get; set; }
         public string IpServidor { get; set; }
         ClienteService service = new();
+
+        Dispatcher hiloUI;
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
         public ClienteViewmodel()
         {
+            hiloUI = Dispatcher.CurrentDispatcher;
             RegistrarCommand = new RelayCommand(Conectar);
+            service.Aprobado += Service_Aprobado;
+            service.computadoraCargada += Service_computadoraCargada;
+            service.ServidorApagado += Service_ServidorApagado;
+            
+            service.InicializarCliente();
 
+        }
+
+        private void Service_computadoraCargada(Computadora obj)
+        {
+            hiloUI.BeginInvoke(() =>
+            {
+                Compu = obj;
+                IpServidor = obj.IpServidor;
+
+            });
+        }
+
+        private void Service_ServidorApagado()
+        {
+            VistaActual = "ServidorApagado";
+            PropertyChanged?.Invoke(this, new(nameof(VistaActual)));
+        }
+
+        private void Service_Aprobado()
+        {
+            VistaActual = "ServidorEncendido";
+            PropertyChanged?.Invoke(this, new(nameof(VistaActual)));    
         }
 
         private void Conectar()

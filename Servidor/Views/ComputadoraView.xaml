@@ -32,13 +32,13 @@
             </Image>
 
             <!-- NOMBRE -->
-            <TextBlock Text="{Binding Nombre}"
+            <TextBlock Text="{Binding NumPC}"
                        FontSize="15"
                        Foreground="White"
                        HorizontalAlignment="Center"/>
 
             <!-- CODIGO -->
-            <TextBlock Text="{Binding Codigo}"
+            <TextBlock Text="{Binding Identificador}"
                        FontSize="11"
                        Foreground="#BDBDBD"
                        HorizontalAlignment="Center"

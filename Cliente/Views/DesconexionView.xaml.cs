@@ -16,7 +16,7 @@ namespace Cliente.Views
     /// <summary>
     /// Lógica de interacción para DesconexionView.xaml
     /// </summary>
-    public partial class DesconexionView : Page
+    public partial class DesconexionView : UserControl
     {
         public DesconexionView()
         {

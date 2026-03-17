@@ -16,7 +16,7 @@ namespace Cliente.Views
     /// <summary>
     /// Lógica de interacción para RegistroComputadoraView.xaml
     /// </summary>
-    public partial class RegistroComputadoraView : Page
+    public partial class RegistroComputadoraView : UserControl  
     {
         public RegistroComputadoraView()
         {
