@@ -14,18 +14,22 @@ namespace Servidor.Services;
 
 public class ServidorService
 {
-    //Propiedad para  
+    //QUE EL NUMEOR LLEVE DOS DIGITOS
     public List<Computadora> ListaComputadoras { get; set; } = new();
+    public List<string> ListaLaboratorios { get; set; } = new();
 
     public Computadora UltimaComputadora { get; set; } = new();
+
+
 
     public UdpClient Servidor { get; set; }
 
     int puerto = 10200;
 
-    public event Action<Computadora>? ComputadoraRegistrada;
+    public event Action? ComputadoraRegistrada;
     public event Action<List<Computadora>>? VerificarConexion;
     public event Action? ActualizarListaComputadoras;
+    public event Action? ActualizarListaLaboratorios;
 
 
     public void IniciarServidor()
@@ -43,6 +47,7 @@ public class ServidorService
 
         ActualizarListaComputadoras?.Invoke();
 
+        ObtenerLaboratorios();
 
     }
 
@@ -73,19 +78,24 @@ public class ServidorService
 
                         Computadora compu = new()
                         {
-                            NumLaboratorio = comandoSeparado[2],
-                            NumPc = comandoSeparado[3],
+                            NumLaboratorio = $"LAB{comandoSeparado[2]}",
+                            NumPc = $"PC{comandoSeparado[3]}",
                             IP = clientEP.Address.ToString(),
                             Puerto = clientEP.Port,
-                            Encendida = true
+                            FechaRegistro = DateOnly.FromDateTime(DateTime.Now),
+                            UltimaVez = DateOnly.FromDateTime(DateTime.Now),
+                            Encendida = true,
+                            Histroial = false,
+
                         };
+
 
 
                         var comandoEnviar = $"APROBAR";
                         EnviarMensaje(comandoEnviar, clientEP.Address.ToString(), clientEP.Port);
 
                         ListaComputadoras.Add(compu);
-                        ComputadoraRegistrada?.Invoke(compu);
+                        ComputadoraRegistrada?.Invoke();
 
                         string json = JsonSerializer.Serialize(ListaComputadoras);
 
@@ -108,15 +118,20 @@ public class ServidorService
                             compuEncontrada.Puerto = clientEP.Port;
                             compuEncontrada.Conexion = comandoSeparado[2] == "True" ? true : false;
                             compuEncontrada.Encendida = true;
-                            VerificarConexion?.Invoke(ListaComputadoras);
+                            compuEncontrada.UltimaVez = DateOnly.FromDateTime(DateTime.Now);
+                            compuEncontrada.Histroial = false;
+                            ActualizarListaComputadoras?.Invoke();
 
 
                         }
+
+                        ObtenerLaboratorios();
                     }
                     catch (SocketException ex)
                     {
                         compuEncontrada.Conexion = false;
                         compuEncontrada.Encendida = false;
+                        ActualizarListaComputadoras?.Invoke();
                     }
 
                 }
@@ -125,6 +140,9 @@ public class ServidorService
             {
                 UltimaComputadora.Encendida = false;
                 UltimaComputadora.Conexion = false;
+                UltimaComputadora.UltimaVez = DateOnly.FromDateTime(DateTime.Now);
+                //
+                ActualizarListaComputadoras?.Invoke();
             }
 
 
@@ -179,7 +197,7 @@ public class ServidorService
             {
                 compuEncontrada.Encendida = false;
                 compuEncontrada.Conexion = false;
-                VerificarConexion?.Invoke(ListaComputadoras);
+                ActualizarListaComputadoras?.Invoke();
             }
         }
     }
@@ -193,6 +211,7 @@ public class ServidorService
             compuEncontrada.Encendida = false;
             compuEncontrada.Conexion = false;
             EnviarMensaje("APAGAR", compuEncontrada.IP, compuEncontrada.Puerto);
+            ActualizarListaComputadoras?.Invoke();
         }
     }
 
@@ -218,10 +237,39 @@ public class ServidorService
         {
             compu.Encendida = false;
             compu.Conexion = false;
+            compu.Histroial = true;
             EnviarMensaje("STATUS", compu.IP, compu.Puerto);
         }
     }
 
+    public void ObtenerLaboratorios()
+    {
+        ListaComputadoras.Where(x=>x.Histroial==false).ToList().ForEach(x =>
+        {
+            if (!ListaLaboratorios.Contains(x.NumLaboratorio))
+            {
+                ListaLaboratorios.Add(x.NumLaboratorio);
+            }
+        });
+
+        ActualizarListaLaboratorios?.Invoke();
+    }
+
+    public void filtrarComputadorasPorLaboratorio(string numLaboratorio)
+    {
+       
+            var computadorasFiltradas = ListaComputadoras.Where(x => x.NumLaboratorio == numLaboratorio && x.Histroial==false ).ToList();
+            VerificarConexion?.Invoke(computadorasFiltradas);
+
+        
+       
+    }
+
+    public void MostrarHistrial()
+    {
+        var computadorasFiltradas = ListaComputadoras.Where(x => x.Histroial == true).ToList();
+        VerificarConexion?.Invoke(computadorasFiltradas);
+    }
 
 
 

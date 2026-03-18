@@ -16,6 +16,8 @@ namespace Cliente.Viewmodels
     {
 
         public ICommand RegistrarCommand { get; set; }
+        public ICommand ReintentarCommand { get; set; }
+
         public string Error { get; set; }
 
         public Computadora Compu { get; set; } = new();
@@ -32,12 +34,31 @@ namespace Cliente.Viewmodels
         {
             hiloUI = Dispatcher.CurrentDispatcher;
             RegistrarCommand = new RelayCommand(Conectar);
+            ReintentarCommand = new RelayCommand(Reintentar);
             service.Aprobado += Service_Aprobado;
             service.computadoraCargada += Service_computadoraCargada;
             service.ServidorApagado += Service_ServidorApagado;
+            service.EnviarError += Service_EnviarError;
             
             service.InicializarCliente();
 
+        }
+
+        private void Service_EnviarError()
+        {
+            Error= "Eliga otro identificador ya que el que intenta usar ya se encuentra registrado";
+        }
+
+        private void Reintentar()
+        {
+            if (Compu.RegistradaEnELServidor == false)
+            {
+                service.Conectar(IpServidor, Compu);
+            }
+            else
+            {
+                service.Reconectar();
+            }
         }
 
         private void Service_computadoraCargada(Computadora obj)

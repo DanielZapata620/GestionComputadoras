@@ -14,11 +14,11 @@ using System.Windows.Shapes;
 namespace Servidor.Views
 {
     /// <summary>
-    /// Lógica de interacción para PanelView.xaml
+    /// Lógica de interacción para HistorialView.xaml
     /// </summary>
-    public partial class PanelView : UserControl
+    public partial class HistorialView : UserControl
     {
-        public PanelView()
+        public HistorialView()
         {
             InitializeComponent();
         }

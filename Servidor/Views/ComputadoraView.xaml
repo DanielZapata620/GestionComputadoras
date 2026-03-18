@@ -6,16 +6,17 @@
              xmlns:local="clr-namespace:Servidor.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Border CornerRadius="10"
+    
+    <Border BorderBrush="WhiteSmoke" BorderThickness="1" CornerRadius="5"
             Background="#2B1F1F"
             Padding="12"
             Margin="0"
-            Height="250"
-            Width="150">
+            Height="260"
+            Width="200">
 
         <StackPanel Width="150" HorizontalAlignment="Center">
 
-            <!-- IMAGEN -->
+          
             <Image Width="80"
                    Height="80"
                    Margin="0,0,0,8"
@@ -31,25 +32,26 @@
 
             </Image>
 
-            <!-- NOMBRE -->
-            <TextBlock Text="{Binding NumPC}"
+            
+            <TextBlock Text="{Binding NumPc}"
                        FontSize="15"
+                       Padding="5"
                        Foreground="White"
                        HorizontalAlignment="Center"/>
 
-            <!-- CODIGO -->
+           
             <TextBlock Text="{Binding Identificador}"
                        FontSize="11"
                        Foreground="#BDBDBD"
                        HorizontalAlignment="Center"
                        Margin="0,0,0,10"/>
 
-            <!-- ESTADOS -->
+            
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Center"
                         Margin="0,0,0,10">
 
-                <!-- ENCENDIDA -->
+                
                 <StackPanel Margin="10,0">
 
                     <TextBlock Text="ENCENDIDA"
@@ -83,7 +85,7 @@
 
                 </StackPanel>
 
-                <!-- INTERNET -->
+               
                 <StackPanel Margin="10,0">
 
                     <TextBlock Text="INTERNET"
@@ -119,7 +121,7 @@
 
             </StackPanel>
 
-            <!-- BOTONES -->
+
             <Button Content="VERIFICAR INTERNET"
                     Height="24"
                     Width="150"
@@ -129,16 +131,29 @@
                     Foreground="White"
                     BorderThickness="0"
                     Command="{Binding DataContext.VerificarInternetCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                    CommandParameter="{Binding Identificador}"/>
+                    CommandParameter="{Binding Identificador}">
+                <Button.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="CornerRadius" Value="3"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
 
             <Button Content="APAGAR"
                     Height="24"
                     FontSize="10"
+               
                     Background="#4B3C3C"
                     Foreground="White"
                     BorderThickness="0"
                     Command="{Binding DataContext.ApagarCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                    CommandParameter="{Binding Identificador}"/>
+                    CommandParameter="{Binding Identificador}">
+                <Button.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="CornerRadius" Value="3"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
 
         </StackPanel>
 

@@ -14,36 +14,94 @@ using System.Windows.Threading;
 
 namespace Servidor.Viewmodels
 {
-    public class ServidorViewmodel
+    public class ServidorViewmodel: INotifyPropertyChanged
     {
         public ObservableCollection<Computadora> ListaComputadoras { get; set; } = new();
 
+        public ObservableCollection<string> ListaLaboratorios { get; set; } = new();
+
         ServidorService servidorService = new ServidorService();
 
+        private string labSeleccionado;
+        public string LabSeleccionado
+        {
+            get => labSeleccionado;
+            set
+            {
+                labSeleccionado = value;
+                PropertyChanged?.Invoke(this, new(nameof(LabSeleccionado)));
+
+                //servidorService.filtrarComputadorasPorLaboratorio(LabSeleccionado);
+            }
+        }
+
         public ICommand VerificarInternetCommand {get; set; }
+        public ICommand FiltrarCommand {get; set; }
+        public ICommand CambiarVistaCommand {get; set; }
+
+        public string VistaActual { get; set; } 
         public ICommand ApagarCommand {get; set; }
 
         Dispatcher hiloUI;
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
         public ServidorViewmodel()
         {
-            
+            ListaLaboratorios.Clear();
+           
             hiloUI = Dispatcher.CurrentDispatcher;
             servidorService.ComputadoraRegistrada += ServidorService_ComputadoraRegistrada;//
             servidorService.VerificarConexion += ServidorService_VerificarConexion;//
+
             VerificarInternetCommand = new RelayCommand<string>(VerificarInternet);
+            FiltrarCommand = new RelayCommand<string>(Filtrar);
+            CambiarVistaCommand = new RelayCommand<string>(CambiarVista);
             servidorService.ActualizarListaComputadoras += ServidorService_ActualizarListaComputadoras;
+            servidorService.ActualizarListaLaboratorios += ServidorService_ActualizarListaLaboratorios;
             ApagarCommand = new RelayCommand<string>(ApagarComputadora);
 
             servidorService.IniciarServidor();
+            servidorService.ObtenerLaboratorios();
+        }
+
+        private void CambiarVista(string? vista)
+        {
+            VistaActual = vista;
+            PropertyChanged?.Invoke(this, new(nameof(VistaActual)));
+
+            if (vista == "Panel")
+            {
+                servidorService.filtrarComputadorasPorLaboratorio(LabSeleccionado);
+            }
+            else
+            {
+                servidorService.MostrarHistrial();
+            }
+                
+        }
+
+        private void Filtrar(string? lab)
+        {
+            LabSeleccionado = lab;
+
+            servidorService.filtrarComputadorasPorLaboratorio(LabSeleccionado);
+        }
+
+        private void ServidorService_ActualizarListaLaboratorios()
+        {
+            hiloUI.BeginInvoke(() =>
+            {
+                ListaLaboratorios.Clear();
+                servidorService.ListaLaboratorios.ForEach(x => ListaLaboratorios.Add(x));
+                LabSeleccionado = ListaLaboratorios.FirstOrDefault();
+                servidorService.filtrarComputadorasPorLaboratorio(LabSeleccionado);
+            });
         }
 
         private void ServidorService_ActualizarListaComputadoras()
         {
-            hiloUI.BeginInvoke(() =>
-            {
-                ListaComputadoras.Clear();
-                servidorService.ListaComputadoras.ForEach(x => ListaComputadoras.Add(x));
-            });
+            servidorService.filtrarComputadorasPorLaboratorio(LabSeleccionado);
         }
 
         private void ApagarComputadora(string? identificador)
@@ -79,12 +137,9 @@ namespace Servidor.Viewmodels
             
         //}
 
-        private void ServidorService_ComputadoraRegistrada(Computadora computadora)
+        private void ServidorService_ComputadoraRegistrada()
         {
-            hiloUI.BeginInvoke(() =>
-            {
-                ListaComputadoras.Add(computadora);
-            });
+            servidorService.filtrarComputadorasPorLaboratorio(LabSeleccionado);
         }
 
         //public UdpClient Servidor { get; set; }

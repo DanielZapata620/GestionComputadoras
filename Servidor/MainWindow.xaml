@@ -8,13 +8,51 @@
         xmlns:local="clr-namespace:Servidor"
         x:Name="ventana"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800" >
 
     <Window.DataContext>
         <vm:ServidorViewmodel></vm:ServidorViewmodel>
     </Window.DataContext>
 
-    <views:PanelView></views:PanelView>
+    <Grid>
+        <ContentControl>
+
+            <ContentControl.Style>
+                <Style TargetType="ContentControl">
+
+                    <Setter Property="Content">
+                        <Setter.Value>
+                            <views:PanelView/>
+                        </Setter.Value>
+                    </Setter>
+
+                    <Style.Triggers>
+
+                        <DataTrigger Binding="{Binding VistaActual}" Value="Historial">
+                            <Setter Property="Content">
+                                <Setter.Value>
+                                    <views:HistorialView></views:HistorialView>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding VistaActual}" Value="Panel">
+                            <Setter Property="Content">
+                                <Setter.Value>
+                                    <views:PanelView></views:PanelView>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+
+                    </Style.Triggers>
+
+                </Style>
+            </ContentControl.Style>
+
+        </ContentControl>
+
+
+    </Grid>
     <!--<Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>

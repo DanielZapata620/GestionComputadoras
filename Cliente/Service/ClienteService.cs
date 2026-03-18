@@ -26,7 +26,7 @@ namespace Cliente.Service
         Ping ping = new();
 
 
-        public event Action<string>? EnviarError;
+        public event Action EnviarError;
         public event Action<Computadora>? computadoraCargada;
         public event Action? Registrar;
         public event Action? Aprobado;
@@ -105,7 +105,7 @@ namespace Cliente.Service
                     {
 
                         var error = comandoSeparado[1];
-                        EnviarError?.Invoke(error);
+                        EnviarError?.Invoke();
 
 
                     }
@@ -124,6 +124,8 @@ namespace Cliente.Service
 
                         var comandoRespuesta = $"RESPUESTA|{Computadora.Identificador}|{Conexion}";
                         EnviarMensaje(comandoRespuesta);
+                        Aprobado?.Invoke();
+
                     }
 
                     if (comandoSeparado[0] == "APAGAR")
@@ -139,6 +141,7 @@ namespace Cliente.Service
 
                         var comandoRespuesta = $"RESPUESTA|{Computadora.Identificador}|{Conexion}";
                         EnviarMensaje(comandoRespuesta);
+                        Aprobado?.Invoke();
                     }
 
                 }
@@ -156,18 +159,27 @@ namespace Cliente.Service
 
         private bool PingDNS()
         {
-            PingReply respuesta = ping.Send("8.8.8.8", 3000);
-            bool Conexion;
-            if (respuesta.Status == IPStatus.Success)
+            try
             {
-                Conexion = true;
+
+                PingReply respuesta = ping.Send("8.8.8.8", 3000);
+                bool Conexion;
+                if (respuesta.Status == IPStatus.Success)
+                {
+                    Conexion = true;
+                }
+                else
+                {
+                    Conexion = false;
+                }
+
+                return Conexion;
             }
-            else
+            catch
             {
-                Conexion = false;
+                return false;
             }
 
-            return Conexion;
         }
 
         public void Conectar(string IpServidor, Computadora Compu)
@@ -207,6 +219,7 @@ namespace Cliente.Service
                 IPEndPoint remoto = new IPEndPoint(ServerIp, port);
                 byte[] buffer = Encoding.UTF8.GetBytes(comando);
                 Cliente.Send(buffer, buffer.Length, remoto);
+                Aprobado?.Invoke();
             }
             catch (SocketException)
             {
@@ -216,6 +229,14 @@ namespace Cliente.Service
         
            
 
+        }
+
+        public void Reconectar()
+        {
+            bool Conexion = PingDNS();
+
+            var comandoRespuesta = $"RESPUESTA|{Computadora.Identificador}|{Conexion}";
+            EnviarMensaje(comandoRespuesta);
         }
 
        
