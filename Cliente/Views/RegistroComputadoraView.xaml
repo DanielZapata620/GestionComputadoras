@@ -5,12 +5,19 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Cliente.Views"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="500" d:DesignWidth="800"
       >
 
     <StackPanel>
-        <Label HorizontalAlignment="Center" Margin="0,30px,0,0" FontSize="20" FontFamily="Segoe UI" FontWeight="Bold">REGISTRAR COMPUTADORA</Label>
-        <Image Source="/Images/pcIcon.png" Width="200px" Height="200px"></Image>
+        <Label HorizontalAlignment="Center" Margin="0,30px,0,0" FontSize="20" FontFamily="Segoe UI" Foreground="White" FontWeight="Bold">REGISTRAR COMPUTADORA</Label>
+        <Image Source="/Images/pcIcon.png" Width="200px" Height="200px">
+            <Image.Effect>
+                <DropShadowEffect Color="White"
+           BlurRadius="1"
+           ShadowDepth="2"
+           Opacity="1"/>
+            </Image.Effect>
+        </Image>
         <Grid RowDefinitions="*,*" HorizontalAlignment="Center" >
             <Grid.ColumnDefinitions >
                 <ColumnDefinition Width="*"/>
@@ -18,7 +25,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             
-            <Label Margin="10"  Content="IP SERVIDOR" FontSize="18" HorizontalAlignment="Center" HorizontalContentAlignment="Center"  Grid.Row="0" Grid.Column="0" Width="200px" />
+            <Label Margin="10" Foreground="White" Content="IP SERVIDOR" FontSize="18" HorizontalAlignment="Center" HorizontalContentAlignment="Center"  Grid.Row="0" Grid.Column="0" Width="200px" />
             
             <TextBox Text="{Binding IpServidor}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Column="0" Grid.Row="1" Width="200px">
                 <TextBox.Resources>
@@ -28,7 +35,7 @@
                 </TextBox.Resources>
             </TextBox>
 
-            <Label Margin="10"  Content="LAB" FontSize="18" HorizontalAlignment="Center" HorizontalContentAlignment="Center"  Grid.Row="0" Grid.Column="1" Width="200px" />
+            <Label Margin="10" Foreground="White" Content="AREA" FontSize="18" HorizontalAlignment="Center" HorizontalContentAlignment="Center"  Grid.Row="0" Grid.Column="1" Width="200px" />
             <TextBox Text="{Binding Compu.LAB}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Column="1" Grid.Row="1" Width="200px">
                 <TextBox.Resources>
                     <Style TargetType="{x:Type Border}">
@@ -37,7 +44,7 @@
                 </TextBox.Resources>
             </TextBox>
 
-            <Label Margin="10"  Content="PC" FontSize="18" HorizontalAlignment="Left" HorizontalContentAlignment="Center"  Grid.Row="0" Grid.Column="2" Width="200px" />
+            <Label Margin="10"  Content="PC" Foreground="White" FontSize="18" HorizontalAlignment="Left" HorizontalContentAlignment="Center"  Grid.Row="0" Grid.Column="2" Width="200px" />
             <TextBox Text="{Binding Compu.PC}"  FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Column="2" Grid.Row="1" Width="200px" >
                 <TextBox.Resources>
                     <Style TargetType="{x:Type Border}">
@@ -50,8 +57,14 @@
 
         </Grid>
 
-        <Button Content="REGISTRAR" HorizontalAlignment="Center" Margin="0,20,0,0"  Padding="10" VerticalAlignment="Top" Grid.Column="1" Grid.Row="2" Width="120px" Command="{Binding RegistrarCommand}" Background="#3498DB" Foreground="White" FontWeight="Bold"/>
-        <Label Content="{Binding Error}" HorizontalAlignment="Center" Margin="0,20,0,0" VerticalAlignment="Top" Grid.Column="1" Grid.Row="3"/>
+        <Button Content="REGISTRAR"  HorizontalAlignment="Center" Margin="0,20,0,0"  Padding="10" FontSize="17" VerticalAlignment="Top" Grid.Column="1" Grid.Row="2" Width="200px" Command="{Binding RegistrarCommand}" Background="#5C4F4F" Foreground="White" FontWeight="Bold">
+            <Button.Resources>
+                <Style TargetType="{x:Type Border}">
+                    <Setter Property="CornerRadius" Value="3"/>
+                </Style>
+            </Button.Resources>
+        </Button>
+        <Label Content="{Binding Error}" FontSize="16" Foreground="DarkRed" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,20,0,0" VerticalAlignment="Top" Grid.Column="1" Grid.Row="3"/>
 
     </StackPanel>
 </UserControl>

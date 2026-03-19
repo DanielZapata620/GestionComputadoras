@@ -7,7 +7,7 @@
         xmlns:viewmodels="clr-namespace:Cliente.Viewmodels"
         xmlns:local="clr-namespace:Cliente"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="500" Width="800" Background="#1E1B1B" ResizeMode="NoResize">
     <Window.DataContext>
         <viewmodels:ClienteViewmodel></viewmodels:ClienteViewmodel>
     </Window.DataContext>
@@ -38,6 +38,14 @@
                             <Setter Property="Content">
                                 <Setter.Value>
                                     <views:DesconexionView></views:DesconexionView>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding VistaActual}" Value="Registrar">
+                            <Setter Property="Content">
+                                <Setter.Value>
+                                    <views:RegistroComputadoraView></views:RegistroComputadoraView>
                                 </Setter.Value>
                             </Setter>
                         </DataTrigger>

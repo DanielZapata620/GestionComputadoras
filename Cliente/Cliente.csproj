@@ -12,6 +12,7 @@
     <None Remove="Images\CkeckIco.png" />
     <None Remove="Images\CrossIco.png" />
     <None Remove="Images\pcIcon.png" />
+    <None Remove="Images\serverIcon.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,6 +31,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\pcIcon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\serverIcon.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>

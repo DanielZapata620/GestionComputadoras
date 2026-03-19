@@ -28,7 +28,7 @@
                            FontSize="28"
                            Foreground="White"
                            VerticalAlignment="Center"
-                           FontWeight="SemiBold"/>
+                           FontWeight="Bold"/>
 
                 
                 <Button Grid.Column="1"
@@ -39,8 +39,8 @@
                         BorderThickness="0"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Center"
-                        Cursor="Hand" Command="{Binding CambiarVistaCommand}"
-        CommandParameter="Panel" >
+                        Command="{Binding CambiarVistaCommand}"
+                        CommandParameter="Panel" >
 
                     <Button.Resources>
                         <Style TargetType="Border">
@@ -79,14 +79,12 @@
 
                 <ItemsControl ItemsSource="{Binding ListaComputadoras}">
 
-                    <!-- 🔥 Para que se vea como lista vertical limpia -->
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
 
-                    <!-- 🔥 Aquí usamos tu UserControl -->
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <views:CompuHistorialView/>

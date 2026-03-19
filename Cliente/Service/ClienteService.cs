@@ -15,9 +15,9 @@ namespace Cliente.Service
 {
     public class ClienteService
     {
-        //Porperdad de registro pedniente para controlar las vistas
+        
         Computadora Computadora { get; set; }
-        UdpClient Cliente;
+        UdpClient Cliente=new(8888);
 
        
 
@@ -36,7 +36,7 @@ namespace Cliente.Service
         public void InicializarCliente()
         {
 
-            Cliente = new();
+            
             if (File.Exists("computadora.json"))
             {
                 string json = File.ReadAllText("computadora.json");
@@ -52,7 +52,7 @@ namespace Cliente.Service
            
             
 
-            // CASO 1: no hay identificador
+    
             if (string.IsNullOrEmpty(Computadora.Identificador))
             {
 
@@ -60,15 +60,16 @@ namespace Cliente.Service
                 return;
             }
             ServerIp = IPAddress.Parse(Computadora.IpServidor);
-            // CASO 2: tiene identificador pero no está registrada
+        
             if (!Computadora.RegistradaEnELServidor)
             {
                
                 Conectar(ServerIp.ToString(), Computadora);
+                ServidorApagado?.Invoke();
                 return;
             }
 
-            // CASO 3: ya está registrada
+       
             if (Computadora.RegistradaEnELServidor)
             {
 
@@ -81,8 +82,9 @@ namespace Cliente.Service
                 Thread hilo = new(RecibirMensajes);
                 hilo.IsBackground = true;
                 hilo.Start();
+                ServidorApagado?.Invoke();
 
-                Aprobado?.Invoke(); 
+                //Aprobado?.Invoke(); 
 
             }
         }
@@ -101,10 +103,10 @@ namespace Cliente.Service
 
                     string[] comandoSeparado = comando.Split('|');
 
-                    if (comandoSeparado[0] == "RECHAZAR" && comandoSeparado.Length > 1)
+                    if (comandoSeparado[0] == "RECHAZAR" && Computadora.RegistradaEnELServidor==false)
                     {
 
-                        var error = comandoSeparado[1];
+                        
                         EnviarError?.Invoke();
 
 
@@ -134,14 +136,23 @@ namespace Cliente.Service
                         Process.Start("shutdown", "/s /t 0");
                     }
 
-                    if (comandoSeparado[0] == "STATUS")
+                    if (comandoSeparado[0] == "STATUS" )
                     {
-                        //VERIFICAR
-                        bool Conexion = PingDNS();
+                        if (Computadora.RegistradaEnELServidor == false)
+                        {
+                            bool internet = PingDNS();
+                            var registrar = $"REGISTRAR|{Computadora.Identificador}|{Computadora.LAB.ToUpper()}|{Computadora.PC}|{internet}";
+                            EnviarMensaje(registrar);
+                        }
+                        else
+                        {
+                            bool Conexion = PingDNS();
 
-                        var comandoRespuesta = $"RESPUESTA|{Computadora.Identificador}|{Conexion}";
-                        EnviarMensaje(comandoRespuesta);
-                        Aprobado?.Invoke();
+                            var comandoRespuesta = $"RESPUESTA|{Computadora.Identificador}|{Conexion}";
+                            EnviarMensaje(comandoRespuesta);
+                            Aprobado?.Invoke();
+                        }
+                        
                     }
 
                 }
@@ -153,7 +164,7 @@ namespace Cliente.Service
                 }
 
 
-                //Comando Aprobar para guardar el identificador y cambiar de vista 
+            
             }
         }
 
@@ -162,7 +173,7 @@ namespace Cliente.Service
             try
             {
 
-                PingReply respuesta = ping.Send("8.8.8.8", 3000);
+                PingReply respuesta = ping.Send("8.8.8.8", 5000);
                 bool Conexion;
                 if (respuesta.Status == IPStatus.Success)
                 {
@@ -186,29 +197,31 @@ namespace Cliente.Service
         {
 
             if (IPAddress.TryParse(IpServidor, out IPAddress? ipServidor))
-                //Compu.Identificador = Compu.Identificador.Replace('|', '\0');
-            //
+                Compu.LAB = Compu.LAB.Replace('|', '\0');
+                Compu.PC = Compu.PC.Replace('|', '\0');
+            
             Computadora = Compu;
-            Compu.Identificador= $"LAB{Compu.LAB}-PC{Compu.PC}";
+            Compu.Identificador= $"{Compu.LAB.ToUpper()}-PC{Compu.PC.ToUpper()}";
             ServerIp =ipServidor;
             Compu.IpServidor=ServerIp.ToString();
 
             //Cliente.Client.ReceiveTimeout = 10000;
 
+            bool internet=PingDNS();
             
-            var comando = $"REGISTRAR|{Compu.Identificador}|{Compu.LAB}|{Compu.PC}";
+            var comando = $"REGISTRAR|{Compu.Identificador}|{Compu.LAB.ToUpper()}|{Compu.PC}|{internet}";
             EnviarMensaje(comando);
+
 
             Thread hilo = new(RecibirMensajes);
             hilo.IsBackground = true;
             hilo.Start();
 
-            
-
-          
 
 
-            
+
+
+
 
         }
 
@@ -219,7 +232,6 @@ namespace Cliente.Service
                 IPEndPoint remoto = new IPEndPoint(ServerIp, port);
                 byte[] buffer = Encoding.UTF8.GetBytes(comando);
                 Cliente.Send(buffer, buffer.Length, remoto);
-                Aprobado?.Invoke();
             }
             catch (SocketException)
             {

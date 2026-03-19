@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Servidor.Views"
-             mc:Ignorable="d" d:DesignHeight="200" d:DesignWidth="800" FontSize="20"
+             mc:Ignorable="d" d:DesignHeight="200" d:DesignWidth="800" FontSize="18" 
              >
 
     <Border BorderBrush="WhiteSmoke" BorderThickness="1"
@@ -22,7 +22,6 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- 🖼 ICONO (AQUÍ PONES TU IMAGEN) -->
             <Image Grid.Column="0"
                    Width="60"
                    Height="60"
@@ -38,37 +37,42 @@
                       Opacity="1"/>
                 </Image.Effect>
             </Image>
-            <!-- 🔥 cambia esta ruta -->
+          
 
-            <!-- IDENTIFICADOR -->
+            
             <TextBlock Grid.Column="1"
                        Text="{Binding Identificador}"
                        Foreground="White"
-                       VerticalAlignment="Center"/>
+                       VerticalAlignment="Center"
+                       TextAlignment="Center"/>
 
-            <!-- LAB -->
+            
             <TextBlock Grid.Column="2"
                        Text="{Binding NumLaboratorio}"
                        Foreground="White"
-                       VerticalAlignment="Center"/>
+                       VerticalAlignment="Center"
+                       TextAlignment="Center"/>
 
-            <!-- NUM PC -->
+          
             <TextBlock Grid.Column="3"
                        Text="{Binding NumPc}"
                        Foreground="White"
-                       VerticalAlignment="Center"/>
+                       VerticalAlignment="Center"
+                        TextAlignment="Center"/>
 
-            <!-- FECHA REGISTRO -->
+            
             <TextBlock Grid.Column="4"
                        Text="{Binding FechaRegistro}"
                        Foreground="White"
-                       VerticalAlignment="Center"/>
+                       VerticalAlignment="Center"
+                       TextAlignment="Center"/>
 
-            <!-- ÚLTIMA VEZ -->
+          
             <TextBlock Grid.Column="5"
                        Text="{Binding UltimaVez}"
                        Foreground="White"
-                       VerticalAlignment="Center"/>
+                       VerticalAlignment="Center"
+                        TextAlignment="Center"/>
 
         </Grid>
 

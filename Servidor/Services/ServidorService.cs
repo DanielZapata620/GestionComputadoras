@@ -14,7 +14,6 @@ namespace Servidor.Services;
 
 public class ServidorService
 {
-    //QUE EL NUMEOR LLEVE DOS DIGITOS
     public List<Computadora> ListaComputadoras { get; set; } = new();
     public List<string> ListaLaboratorios { get; set; } = new();
 
@@ -26,7 +25,7 @@ public class ServidorService
 
     int puerto = 10200;
 
-    public event Action? ComputadoraRegistrada;
+    public event Action<string>? ComputadoraRegistrada;
     public event Action<List<Computadora>>? VerificarConexion;
     public event Action? ActualizarListaComputadoras;
     public event Action? ActualizarListaLaboratorios;
@@ -43,7 +42,7 @@ public class ServidorService
 
         ListaComputadoras.Clear();
         ListaComputadoras = LeerJson();
-        VerificarStatusGlobal();
+        VerificarStatusGlobal(true);
 
         ActualizarListaComputadoras?.Invoke();
 
@@ -69,22 +68,24 @@ public class ServidorService
                 {
                     if (ListaComputadoras.Any(x => x.Identificador == comandoSeparado[1]))
                     {
-                        var error = "Eliga otro identifiacdor , ya que el que intenta usar ya se encuentra registrado";
-                        var comandoEnviar = $"RECHAZAR|{error}";
-                        EnviarMensaje(comandoEnviar, clientEP.Address.ToString(), clientEP.Port);
+                        
+                        var comandoEnviar = $"RECHAZAR";
+                        var compuEncontrada = ListaComputadoras.FirstOrDefault(x => x.Identificador == comandoSeparado[1]);
+                        EnviarMensaje(comandoEnviar, compuEncontrada);
                     }
                     else
                     {
 
                         Computadora compu = new()
                         {
-                            NumLaboratorio = $"LAB{comandoSeparado[2]}",
+                            NumLaboratorio = $"{comandoSeparado[2]}",
                             NumPc = $"PC{comandoSeparado[3]}",
                             IP = clientEP.Address.ToString(),
                             Puerto = clientEP.Port,
                             FechaRegistro = DateOnly.FromDateTime(DateTime.Now),
                             UltimaVez = DateOnly.FromDateTime(DateTime.Now),
                             Encendida = true,
+                            Conexion= comandoSeparado[4] == "True" ? true : false,
                             Histroial = false,
 
                         };
@@ -92,10 +93,10 @@ public class ServidorService
 
 
                         var comandoEnviar = $"APROBAR";
-                        EnviarMensaje(comandoEnviar, clientEP.Address.ToString(), clientEP.Port);
+                        EnviarMensaje(comandoEnviar, compu);
 
                         ListaComputadoras.Add(compu);
-                        ComputadoraRegistrada?.Invoke();
+                        ComputadoraRegistrada?.Invoke(compu.NumLaboratorio);
 
                         string json = JsonSerializer.Serialize(ListaComputadoras);
 
@@ -108,7 +109,7 @@ public class ServidorService
 
                 if (comandoSeparado[0] == "RESPUESTA" && comandoSeparado.Length > 1)
                 {
-                    var compuEncontrada = ListaComputadoras.FirstOrDefault(x => x.Identificador == comandoSeparado[1]);
+                    var compuEncontrada = ListaComputadoras.FirstOrDefault(x => x.Identificador.ToUpper() == comandoSeparado[1]);
                     try
                     {
 
@@ -122,10 +123,15 @@ public class ServidorService
                             compuEncontrada.Histroial = false;
                             ActualizarListaComputadoras?.Invoke();
 
+                            ComputadoraRegistrada?.Invoke(compuEncontrada.NumLaboratorio);
+
+                            string json = JsonSerializer.Serialize(ListaComputadoras);
+
+                            File.WriteAllText("computadoras.json", json);
 
                         }
 
-                        ObtenerLaboratorios();
+                      
                     }
                     catch (SocketException ex)
                     {
@@ -141,12 +147,12 @@ public class ServidorService
                 UltimaComputadora.Encendida = false;
                 UltimaComputadora.Conexion = false;
                 UltimaComputadora.UltimaVez = DateOnly.FromDateTime(DateTime.Now);
-                //
+              
                 ActualizarListaComputadoras?.Invoke();
             }
 
 
-            //if (comandoSeparado[0] == "REGISTRAR" && comandoSeparado.Length > 1)
+         
         }
 
        
@@ -155,33 +161,28 @@ public class ServidorService
 
 
 
-    public void EnviarMensaje(string commando,  string ip, int port)
+    public void EnviarMensaje(string commando,  Computadora compu)
     {
+        try 
+        {
+            IPAddress.TryParse(compu.IP, out IPAddress? ipServidor);
+            IPEndPoint remoto = new IPEndPoint(ipServidor, compu.Puerto);
 
-        IPAddress.TryParse(ip, out IPAddress? ipServidor);
-            IPEndPoint remoto = new IPEndPoint(ipServidor, port);
-           
             byte[] buffer = Encoding.UTF8.GetBytes(commando);
 
 
             Servidor.Send(buffer, buffer.Length, remoto);
+        }
+        catch(SocketException)
+        {
+            compu.Encendida = false;
+            compu.Conexion = false;
+            ActualizarListaComputadoras?.Invoke();
+        }
+        
 
     }
-        //if (commando == "RECHAZAR")
-        //{
-
-
-        //    IPEndPoint remoto = new IPEndPoint(ip, port);
-        //    commando += "|" + parametro;
-        //    byte[] buffer = Encoding.UTF8.GetBytes(commando);
-
-
-        //    Servidor.Send(buffer, buffer.Length, remoto);
-
-        //}
-
     
-
 
     public void VerificarInternet(string Identificador)
     {
@@ -191,7 +192,9 @@ public class ServidorService
             try
             {
                 UltimaComputadora = compuEncontrada;
-                EnviarMensaje("CONEXION", compuEncontrada.IP, compuEncontrada.Puerto);
+                compuEncontrada.Encendida = false;
+                compuEncontrada.Conexion = false;
+                EnviarMensaje("CONEXION", compuEncontrada);
             }
             catch (SocketException)
             {
@@ -200,6 +203,7 @@ public class ServidorService
                 ActualizarListaComputadoras?.Invoke();
             }
         }
+        ActualizarListaComputadoras?.Invoke();
     }
 
     public void ApagarComputadora(string Identificador)
@@ -210,7 +214,7 @@ public class ServidorService
             UltimaComputadora = compuEncontrada;
             compuEncontrada.Encendida = false;
             compuEncontrada.Conexion = false;
-            EnviarMensaje("APAGAR", compuEncontrada.IP, compuEncontrada.Puerto);
+            EnviarMensaje("APAGAR", compuEncontrada);
             ActualizarListaComputadoras?.Invoke();
         }
     }
@@ -226,19 +230,17 @@ public class ServidorService
         return new List<Computadora>();
     }
 
-    //public void DescubrirComputadorasBroadcast()
-    //{
-    //    Servidor.EnableBroadcast = true;
-    //    EnviarMensaje("DESCUBRIR", "255.255.255.255", puerto);
-    //}
-    public void VerificarStatusGlobal() 
+    public void VerificarStatusGlobal(bool Inicializar) 
     {
         foreach (var compu in ListaComputadoras)
         {
             compu.Encendida = false;
             compu.Conexion = false;
-            compu.Histroial = true;
-            EnviarMensaje("STATUS", compu.IP, compu.Puerto);
+            if(Inicializar==true){
+                compu.Histroial = true;
+            }
+            EnviarMensaje("STATUS", compu);
+            ActualizarListaComputadoras?.Invoke();
         }
     }
 

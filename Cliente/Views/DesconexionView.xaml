@@ -6,10 +6,17 @@
       xmlns:local="clr-namespace:Cliente.Views"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      >
+      Background="#1E1B1B">
 
     <Grid ColumnDefinitions="*,*,*" RowDefinitions="*,100">
-        <Image Source="/Images/pcIcon.png"></Image>
+        <Image Source="/Images/pcIcon.png">
+            <Image.Effect>
+                <DropShadowEffect Color="White"
+           BlurRadius="1"
+           ShadowDepth="2"
+           Opacity="1"/>
+            </Image.Effect>
+        </Image>
         <Canvas Grid.Column="1">
             <Image Source="/Images/CrossIco.png" Canvas.Top="146" Canvas.Left="104" Height="62" Width="59" Panel.ZIndex="1" HorizontalAlignment="Center" VerticalAlignment="Top"></Image>
             <Line X1="0" Y1="175" X2="265"  Y2="175"
@@ -21,9 +28,15 @@
           StrokeEndLineCap="Round"/>
         </Canvas>
         <Image Source="/Images/serverIcon.png" Grid.Column="2" Height="150">
+            <Image.Effect>
+                <DropShadowEffect Color="White"
+           BlurRadius="1"
+           ShadowDepth="2"
+           Opacity="1"/>
+            </Image.Effect>
         </Image>
 
-        <Button Grid.Row="1" Grid.ColumnSpan="3" Content="REINTENTAR" Command="{Binding ReintentarCommand}" >
+        <Button Background="#5C4F4F" Grid.Row="1" Grid.ColumnSpan="3" Content="REINTENTAR" Foreground="White" FontSize="20" FontWeight="Bold" Command="{Binding ReintentarCommand}" >
             <Button.Resources>
             <Style TargetType="{x:Type Border}">
                 <Setter Property="CornerRadius" Value="3"/>

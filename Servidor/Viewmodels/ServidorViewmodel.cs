@@ -37,6 +37,7 @@ namespace Servidor.Viewmodels
 
         public ICommand VerificarInternetCommand {get; set; }
         public ICommand FiltrarCommand {get; set; }
+        public ICommand RefrescarCommand {get; set; }
         public ICommand CambiarVistaCommand {get; set; }
 
         public string VistaActual { get; set; } 
@@ -56,13 +57,22 @@ namespace Servidor.Viewmodels
 
             VerificarInternetCommand = new RelayCommand<string>(VerificarInternet);
             FiltrarCommand = new RelayCommand<string>(Filtrar);
+            RefrescarCommand = new RelayCommand(Refrecsar);
             CambiarVistaCommand = new RelayCommand<string>(CambiarVista);
+
             servidorService.ActualizarListaComputadoras += ServidorService_ActualizarListaComputadoras;
             servidorService.ActualizarListaLaboratorios += ServidorService_ActualizarListaLaboratorios;
             ApagarCommand = new RelayCommand<string>(ApagarComputadora);
 
             servidorService.IniciarServidor();
             servidorService.ObtenerLaboratorios();
+            LabSeleccionado = ListaLaboratorios.FirstOrDefault();
+
+        }
+
+        private void Refrecsar()
+        {
+            servidorService.VerificarStatusGlobal(false);
         }
 
         private void CambiarVista(string? vista)
@@ -94,7 +104,6 @@ namespace Servidor.Viewmodels
             {
                 ListaLaboratorios.Clear();
                 servidorService.ListaLaboratorios.ForEach(x => ListaLaboratorios.Add(x));
-                LabSeleccionado = ListaLaboratorios.FirstOrDefault();
                 servidorService.filtrarComputadorasPorLaboratorio(LabSeleccionado);
             });
         }
@@ -123,98 +132,14 @@ namespace Servidor.Viewmodels
             servidorService.VerificarInternet(identificador);
         }
 
-        //private void ServidorService_VerificarConexion(Computadora computadora)
-        //{
 
-        //    hiloUI.BeginInvoke(() =>
-        //    {
-        //        var compuEncontrada=ListaComputadoras.FirstOrDefault(x => x.Identificador == computadora.Identificador);
-        //        if (compuEncontrada != null)
-        //        {
-        //            compuEncontrada.Conexion = computadora.Conexion;
-        //        }
-        //    });
-            
-        //}
 
-        private void ServidorService_ComputadoraRegistrada()
+        private void ServidorService_ComputadoraRegistrada(string? lab)
         {
-            servidorService.filtrarComputadorasPorLaboratorio(LabSeleccionado);
+            LabSeleccionado = lab;
+            servidorService.ObtenerLaboratorios();
         }
 
-        //public UdpClient Servidor { get; set; }
-
-        //int puerto = 10200;
-
-        //public event PropertyChangedEventHandler? PropertyChanged;
-
-        //public ServidorViewmodel()
-        //{
-        //    IPEndPoint serverEP = new(IPAddress.Any, puerto);
-        //    Servidor = new UdpClient(serverEP);
-
-        //    Thread hilo = new(RecibirMensajes);
-        //    hilo.IsBackground=true;
-        //    hilo.Start();
-
-        //}
-
-
-
-
-        //public void RecibirMensajes()
-        //{
-        //    while(true){
-        //        IPEndPoint clientEP = new(IPAddress.None, 0);
-
-
-        //        byte[] buffer = Servidor.Receive(ref clientEP);
-        //        string comando = Encoding.UTF8.GetString(buffer);
-
-        //        string[] comandoSeparado = comando.Split('|');
-
-        //        if (comandoSeparado[0] == "REGISTRAR" && comandoSeparado.Length > 1)
-        //        {
-        //            if (ListaComputadoras.Any(x => x.Identificador == comandoSeparado[1]))
-        //            {
-        //                EnviarMensaje("RECHAZAR", "Eliga otro identifiacdor , ya que el que intenta usar ya se encuentra registrado", clientEP.Address, clientEP.Port);
-        //            }
-        //            else
-        //            {
-        //                Computadora compu = new()
-        //                {
-        //                    Identificador = comandoSeparado[1],
-        //                    IP = clientEP.Address,
-        //                    Puerto = clientEP.Port,
-        //                    Encendida = true
-        //                };
-
-
-        //                ListaComputadoras.Add(compu);
-
-        //            }
-
-
-
-        //        }           
-        //    }
-        //}
-
-        //public void EnviarMensaje(string commando, string parametro,IPAddress ip,int port)
-        //{
-        //    if (commando == "RECHAZAR")
-        //    {
-
-
-        //        IPEndPoint remoto = new IPEndPoint(ip, port);
-        //        commando += "|"+parametro;
-        //        byte[] buffer = Encoding.UTF8.GetBytes(commando);
-
-
-        //        Servidor.Send(buffer, buffer.Length, remoto);
-
-        //    }
-
-        //}
+     
     }
 }
