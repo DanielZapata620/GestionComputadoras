@@ -39,9 +39,18 @@ namespace Cliente.Viewmodels
             service.computadoraCargada += Service_computadoraCargada;
             service.ServidorApagado += Service_ServidorApagado;
             service.EnviarError += Service_EnviarError;
-            
+            service.InvalidarIp += Service_InvalidarIp;
+
             service.InicializarCliente();
 
+        }
+
+        private void Service_InvalidarIp()
+        {
+            Error = "Ingrese una ip valida";
+            PropertyChanged?.Invoke(this, new(nameof(Error)));
+            VistaActual = "Registrar";
+            PropertyChanged?.Invoke(this, new(nameof(VistaActual)));
         }
 
         private void Service_EnviarError()

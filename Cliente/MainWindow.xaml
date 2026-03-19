@@ -7,7 +7,7 @@
         xmlns:viewmodels="clr-namespace:Cliente.Viewmodels"
         xmlns:local="clr-namespace:Cliente"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="800" Background="#1E1B1B" ResizeMode="NoResize">
+        Title="MainWindow" Height="520" Width="800" Background="#1E1B1B" ResizeMode="NoResize">
     <Window.DataContext>
         <viewmodels:ClienteViewmodel></viewmodels:ClienteViewmodel>
     </Window.DataContext>

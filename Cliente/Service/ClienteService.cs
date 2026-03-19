@@ -27,6 +27,7 @@ namespace Cliente.Service
 
 
         public event Action EnviarError;
+        public event Action InvalidarIp;
         public event Action<Computadora>? computadoraCargada;
         public event Action? Registrar;
         public event Action? Aprobado;
@@ -195,27 +196,35 @@ namespace Cliente.Service
 
         public void Conectar(string IpServidor, Computadora Compu)
         {
+            try
+            {
+                if (IPAddress.TryParse(IpServidor, out IPAddress? ipServidor))
 
-            if (IPAddress.TryParse(IpServidor, out IPAddress? ipServidor))
-                Compu.LAB = Compu.LAB.Replace('|', '\0');
+                    Compu.LAB = Compu.LAB.Replace('|', '\0');
                 Compu.PC = Compu.PC.Replace('|', '\0');
+
+                Computadora = Compu;
+                Compu.Identificador = $"{Compu.LAB.ToUpper()}-PC{Compu.PC.ToUpper()}";
+                ServerIp = ipServidor;
+                Compu.IpServidor = ServerIp.ToString();
+
+                //Cliente.Client.ReceiveTimeout = 10000;
+
+                bool internet = PingDNS();
+
+                var comando = $"REGISTRAR|{Compu.Identificador}|{Compu.LAB.ToUpper()}|{Compu.PC}|{internet}";
+                EnviarMensaje(comando);
+
+
+                Thread hilo = new(RecibirMensajes);
+                hilo.IsBackground = true;
+                hilo.Start();
+            }
+            catch (NullReferenceException)
+            {
+                InvalidarIp.Invoke();
+            }
             
-            Computadora = Compu;
-            Compu.Identificador= $"{Compu.LAB.ToUpper()}-PC{Compu.PC.ToUpper()}";
-            ServerIp =ipServidor;
-            Compu.IpServidor=ServerIp.ToString();
-
-            //Cliente.Client.ReceiveTimeout = 10000;
-
-            bool internet=PingDNS();
-            
-            var comando = $"REGISTRAR|{Compu.Identificador}|{Compu.LAB.ToUpper()}|{Compu.PC}|{internet}";
-            EnviarMensaje(comando);
-
-
-            Thread hilo = new(RecibirMensajes);
-            hilo.IsBackground = true;
-            hilo.Start();
 
 
 

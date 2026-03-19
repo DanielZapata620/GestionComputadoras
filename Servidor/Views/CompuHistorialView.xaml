@@ -14,10 +14,10 @@
         <Grid >
 
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="180"/>
+                <ColumnDefinition Width="180"/>
+                <ColumnDefinition Width="180"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
@@ -60,19 +60,18 @@
                        VerticalAlignment="Center"
                         TextAlignment="Center"/>
 
-            
-            <TextBlock Grid.Column="4"
-                       Text="{Binding FechaRegistro}"
-                       Foreground="White"
-                       VerticalAlignment="Center"
-                       TextAlignment="Center"/>
 
-          
+            <TextBlock Grid.Column="4"
+           Text="{Binding FechaRegistro, StringFormat=REGISTRADA EL {0}}"
+           Foreground="White"
+           VerticalAlignment="Center"
+           TextAlignment="Center"/>
+
             <TextBlock Grid.Column="5"
-                       Text="{Binding UltimaVez}"
-                       Foreground="White"
-                       VerticalAlignment="Center"
-                        TextAlignment="Center"/>
+           Text="{Binding UltimaVez, StringFormat=ULTIMA CONEXION EL {0}}"
+           Foreground="White"
+           VerticalAlignment="Center"
+           TextAlignment="Center"/>
 
         </Grid>
 

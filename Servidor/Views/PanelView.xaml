@@ -46,6 +46,7 @@
                         Margin="20,0"
                         FontWeight="Bold"
                         FontSize="16"
+                        Content="HISTROIAL"
                         Command="{Binding CambiarVistaCommand}"
         CommandParameter="Historial">
 
@@ -54,14 +55,7 @@
                             <Setter Property="CornerRadius" Value="3"/>
                         </Style>
                     </Button.Resources>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-
-                        
-
-                        <TextBlock Text="HISTORIAL"
-                                   FontSize="13"/>
-
-                    </StackPanel>
+                    
 
                 </Button>
 
@@ -123,7 +117,6 @@ SelectedItem="{Binding LabSeleccionado, Mode=TwoWay}"
                         Background="#6A5C5C"
                         Foreground="White"
                         BorderThickness="0"
-                        Cursor="Hand"
                         Command="{Binding DataContext.FiltrarCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                         CommandParameter="{Binding}">
 
@@ -149,7 +142,7 @@ SelectedItem="{Binding LabSeleccionado, Mode=TwoWay}"
                         Foreground="White"
                         BorderThickness="0"
                         Margin="10,0"
-                        Cursor="Hand"
+                        Content="REFRESCAR"
                         Command="{Binding RefrescarCommand}" FontWeight="Bold" FontSize="16">
 
                     <Button.Resources>
@@ -157,16 +150,7 @@ SelectedItem="{Binding LabSeleccionado, Mode=TwoWay}"
                             <Setter Property="CornerRadius" Value="3"/>
                         </Style>
                     </Button.Resources>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-
-                        <TextBlock Text=" REFRESCAR"
-                                   FontSize="14"
-                                   Margin="0,0,6,0">
-                           
-                        </TextBlock>
-                      
-
-                    </StackPanel>
+                  
 
                 </Button>
 

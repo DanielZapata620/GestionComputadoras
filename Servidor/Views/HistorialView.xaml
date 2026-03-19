@@ -39,6 +39,8 @@
                         BorderThickness="0"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Center"
+                        Content="PANEL DE CONTROL"
+                        FontWeight="Bold"
                         Command="{Binding CambiarVistaCommand}"
                         CommandParameter="Panel" >
 
@@ -48,13 +50,7 @@
                         </Style>
                     </Button.Resources>
 
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <TextBlock Text="🖥"
-                                   FontSize="16"
-                                   Margin="0,0,6,0"/>
-                        <TextBlock Text="PANEL"
-                                   FontSize="13"/>
-                    </StackPanel>
+                  
 
                 </Button>
 
@@ -62,10 +58,13 @@
         </Border>
 
         
+        
+        
         <Grid Grid.Row="1" Margin="40,25">
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
+
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
