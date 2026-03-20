@@ -73,7 +73,8 @@ namespace Servidor.Viewmodels
 
         private void Refrecsar()
         {
-            servidorService.VerificarStatusGlobalBroadcast(false);
+
+            servidorService.VerificarStatusGlobal(false);
         }
 
         private void CambiarVista(string? vista)
