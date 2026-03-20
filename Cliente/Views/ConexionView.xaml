@@ -8,7 +8,7 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Background="#1E1B1B" >
 
-    <Grid ColumnDefinitions="*,*,*">
+    <Grid ColumnDefinitions="*,*,*" RowDefinitions="*,100">
         <Image Source="/Images/pcIcon.png">
             <Image.Effect>
                 <DropShadowEffect Color="White"
@@ -18,8 +18,8 @@
             </Image.Effect>
         </Image>
         <Canvas Grid.Column="1">
-            <Image Source="/Images/CkeckIco.png" Canvas.Top="194" Canvas.Left="104" Height="62" Width="59" Panel.ZIndex="1"></Image>
-            <Line X1="0" Y1="225" X2="265"  Y2="225"
+            <Image Source="/Images/CkeckIco.png" Canvas.Top="148" Canvas.Left="104" Height="62" Width="59" Panel.ZIndex="1" HorizontalAlignment="Center" VerticalAlignment="Top"></Image>
+            <Line X1="0" Y1="175" X2="265"  Y2="175"
               Stroke="Green"
               StrokeThickness="5"
               StrokeDashArray="4,3"
@@ -35,6 +35,8 @@
                        Opacity="1"/>
             </Image.Effect>
         </Image>
+        <TextBlock Background="#5C4F4F" Grid.Row="1" Grid.ColumnSpan="3" Text="{Binding Compu.Identificador}" Foreground="White" FontSize="25" FontWeight="Bold" TextAlignment="Center" Padding="35" >
 
+        </TextBlock>
     </Grid>
 </UserControl>

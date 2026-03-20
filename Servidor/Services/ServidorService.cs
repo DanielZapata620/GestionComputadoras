@@ -42,7 +42,7 @@ public class ServidorService
 
         ListaComputadoras.Clear();
         ListaComputadoras = LeerJson();
-        VerificarStatusGlobal(true);
+        VerificarStatusGlobalBroadcast(true);
 
         ActualizarListaComputadoras?.Invoke();
 
@@ -131,7 +131,8 @@ public class ServidorService
 
                         }
 
-                      
+                       
+
                     }
                     catch (SocketException ex)
                     {
@@ -244,6 +245,34 @@ public class ServidorService
         }
     }
 
+    public void VerificarStatusGlobalBroadcast(bool Inicializar)
+    {
+        foreach (var compu in ListaComputadoras)
+        {
+            compu.Encendida = false;
+            compu.Conexion = false;
+            if (Inicializar == true)
+            {
+                compu.Histroial = true;
+            }
+           
+           
+        }
+        
+        Servidor.EnableBroadcast = true;
+        IPEndPoint remoto = new IPEndPoint(IPAddress.Broadcast, 8888);
+        string commando = "STATUS";
+
+        byte[] buffer = Encoding.UTF8.GetBytes(commando);
+        Servidor.Send(buffer, buffer.Length, remoto);
+
+        ActualizarListaComputadoras?.Invoke();
+
+    }
+  
+        
+    
+
     public void ObtenerLaboratorios()
     {
         ListaComputadoras.Where(x=>x.Histroial==false).ToList().ForEach(x =>
@@ -254,13 +283,15 @@ public class ServidorService
             }
         });
 
+        
         ActualizarListaLaboratorios?.Invoke();
+        
     }
 
     public void filtrarComputadorasPorLaboratorio(string numLaboratorio)
     {
        
-            var computadorasFiltradas = ListaComputadoras.Where(x => x.NumLaboratorio == numLaboratorio && x.Histroial==false ).ToList();
+            var computadorasFiltradas = ListaComputadoras.Where(x => x.NumLaboratorio == numLaboratorio && x.Histroial==false).OrderBy(x => x.NumPc).ToList();
             VerificarConexion?.Invoke(computadorasFiltradas);
 
         

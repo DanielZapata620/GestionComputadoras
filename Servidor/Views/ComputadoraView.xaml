@@ -137,6 +137,23 @@
                         <Setter Property="CornerRadius" Value="3"/>
                     </Style>
                 </Button.Resources>
+
+                <Button.Style>
+                    <Style TargetType="Button">
+
+                        <Setter Property="Visibility" Value="Hidden"/>
+
+                        <Style.Triggers>
+
+                            <DataTrigger Binding="{Binding Encendida}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+
+                        </Style.Triggers>
+
+                    </Style>
+
+                </Button.Style>
             </Button>
 
             <Button Content="APAGAR"
@@ -153,6 +170,24 @@
                         <Setter Property="CornerRadius" Value="3"/>
                     </Style>
                 </Button.Resources>
+
+                <Button.Style>
+                    <Style TargetType="Button">
+
+                        <Setter Property="Visibility" Value="Hidden"/>
+
+                        <Style.Triggers>
+
+                            <DataTrigger Binding="{Binding Encendida}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+
+                        </Style.Triggers>
+
+                    </Style>
+
+                </Button.Style>
+
             </Button>
 
         </StackPanel>

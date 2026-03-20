@@ -10,6 +10,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace Servidor.Viewmodels
@@ -72,7 +73,7 @@ namespace Servidor.Viewmodels
 
         private void Refrecsar()
         {
-            servidorService.VerificarStatusGlobal(false);
+            servidorService.VerificarStatusGlobalBroadcast(false);
         }
 
         private void CambiarVista(string? vista)
@@ -94,16 +95,20 @@ namespace Servidor.Viewmodels
         private void Filtrar(string? lab)
         {
             LabSeleccionado = lab;
-
+            VistaActual = "Panel";
+            PropertyChanged?.Invoke(this, new(nameof(VistaActual)));
             servidorService.filtrarComputadorasPorLaboratorio(LabSeleccionado);
         }
 
         private void ServidorService_ActualizarListaLaboratorios()
         {
+            VistaActual = "Panel";
+            PropertyChanged?.Invoke(this, new(nameof(VistaActual)));
             hiloUI.BeginInvoke(() =>
             {
                 ListaLaboratorios.Clear();
                 servidorService.ListaLaboratorios.ForEach(x => ListaLaboratorios.Add(x));
+                ListaLaboratorios.OrderBy(x => x);
                 servidorService.filtrarComputadorasPorLaboratorio(LabSeleccionado);
             });
         }
