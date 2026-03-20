@@ -241,6 +241,7 @@ namespace Cliente.Service
                 IPEndPoint remoto = new IPEndPoint(ServerIp, port);
                 byte[] buffer = Encoding.UTF8.GetBytes(comando);
                 Cliente.Send(buffer, buffer.Length, remoto);
+                ServidorApagado?.Invoke();
             }
             catch (SocketException)
             {
