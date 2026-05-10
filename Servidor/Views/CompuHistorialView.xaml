@@ -15,9 +15,10 @@
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="100"/>
-                <ColumnDefinition Width="180"/>
-                <ColumnDefinition Width="180"/>
-                <ColumnDefinition Width="180"/>
+                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
@@ -72,6 +73,12 @@
            Foreground="White"
            VerticalAlignment="Center"
            TextAlignment="Center"/>
+
+            <Button Grid.Column="6"
+                Command="{Binding DataContext.EliminarCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                CommandParameter="{Binding Identificador}">
+                ELIMINAR
+            </Button>
 
         </Grid>
 

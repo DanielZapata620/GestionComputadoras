@@ -10,21 +10,26 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
+using System.Windows.Threading;
 
 namespace Cliente.Service
 {
     public class ClienteService
     {
-        
-        Computadora Computadora { get; set; }
-        UdpClient Cliente=new(8888);
 
-       
+        Computadora Computadora { get; set; }
+        UdpClient Cliente = new(8888);
+
+
 
         IPAddress ServerIp;
         int port = 10200;
         Ping ping = new();
 
+        DispatcherTimer timer = new DispatcherTimer();
+
+
+        int contador;
 
         public event Action EnviarError;
         public event Action InvalidarIp;
@@ -32,12 +37,19 @@ namespace Cliente.Service
         public event Action? Registrar;
         public event Action? Aprobado;
         public event Action? ServidorApagado;
+        public event Action? ApagarComputadora;
+        public event Action<int>? ActualizarTimer;
 
 
+        public ClienteService()
+        {
+            timer.Interval = TimeSpan.FromSeconds(1);
+            timer.Tick += TimerTick;   
+        }
         public void InicializarCliente()
         {
 
-            
+
             if (File.Exists("computadora.json"))
             {
                 string json = File.ReadAllText("computadora.json");
@@ -50,10 +62,10 @@ namespace Cliente.Service
                 Computadora = new Computadora();
             }
 
-           
-            
 
-    
+
+
+
             if (string.IsNullOrEmpty(Computadora.Identificador))
             {
 
@@ -61,20 +73,20 @@ namespace Cliente.Service
                 return;
             }
             ServerIp = IPAddress.Parse(Computadora.IpServidor);
-        
+
             if (!Computadora.RegistradaEnELServidor)
             {
-               
+
                 Conectar(ServerIp.ToString(), Computadora);
                 ServidorApagado?.Invoke();
                 return;
             }
 
-       
+
             if (Computadora.RegistradaEnELServidor)
             {
 
-                
+
                 bool Conexion = PingDNS();
 
                 var comandoRespuesta = $"RESPUESTA|{Computadora.Identificador}|{Conexion}";
@@ -104,10 +116,10 @@ namespace Cliente.Service
 
                     string[] comandoSeparado = comando.Split('|');
 
-                    if (comandoSeparado[0] == "RECHAZAR" && Computadora.RegistradaEnELServidor==false)
+                    if (comandoSeparado[0] == "RECHAZAR" && Computadora.RegistradaEnELServidor == false)
                     {
 
-                        
+
                         EnviarError?.Invoke();
 
 
@@ -134,10 +146,14 @@ namespace Cliente.Service
                     if (comandoSeparado[0] == "APAGAR")
                     {
 
-                        Process.Start("shutdown", "/s /t 0");
+                        contador = 10;
+                        ApagarComputadora?.Invoke();
+                        timer.Start();
+
+
                     }
 
-                    if (comandoSeparado[0] == "STATUS" )
+                    if (comandoSeparado[0] == "STATUS")
                     {
                         if (Computadora.RegistradaEnELServidor == false)
                         {
@@ -153,7 +169,7 @@ namespace Cliente.Service
                             EnviarMensaje(comandoRespuesta);
                             Aprobado?.Invoke();
                         }
-                        
+
                     }
 
                 }
@@ -165,7 +181,7 @@ namespace Cliente.Service
                 }
 
 
-            
+
             }
         }
 
@@ -224,7 +240,7 @@ namespace Cliente.Service
             {
                 InvalidarIp.Invoke();
             }
-            
+
 
 
 
@@ -245,11 +261,11 @@ namespace Cliente.Service
             }
             catch (SocketException)
             {
-               
+
                 ServidorApagado?.Invoke();
             }
-        
-           
+
+
 
         }
 
@@ -261,6 +277,29 @@ namespace Cliente.Service
             EnviarMensaje(comandoRespuesta);
         }
 
-       
+
+        public void CancelarApagado()
+        {
+            timer.Stop();
+            Aprobado?.Invoke();
+
+        }
+
+        private void TimerTick(object? sender, EventArgs e)
+        {
+        
+
+            if (contador == 0)
+            {
+                timer.Stop();
+                var comandoRespuesta = $"STATUSAPAGADOCOMPU|{Computadora.Identificador}";
+                EnviarMensaje(comandoRespuesta);
+            }
+            else
+            {
+                contador--;
+                ActualizarTimer?.Invoke(contador);
+            }
+        }
     }
 }

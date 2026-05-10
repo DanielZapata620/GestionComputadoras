@@ -8,6 +8,7 @@ using System.Net.Sockets;
 using System.Reflection.Metadata;
 using System.Text;
 using System.Text.Json;
+using System.Windows.Threading;
 
 
 namespace Servidor.Services;
@@ -19,8 +20,15 @@ public class ServidorService
 
     public Computadora UltimaComputadora { get; set; } = new();
 
+    DispatcherTimer timerStatus;
 
-
+    public ServidorService()
+    {
+        timerStatus = new DispatcherTimer();
+        timerStatus.Interval = TimeSpan.FromSeconds(30);
+        timerStatus.Tick += TimerStatusTick;
+        timerStatus.Start();
+    }
     public UdpClient Servidor { get; set; }
 
     int puerto = 10200;
@@ -107,7 +115,18 @@ public class ServidorService
 
                 }
 
-                if (comandoSeparado[0] == "RESPUESTA" && comandoSeparado.Length > 1)
+                if (comandoSeparado[0] == "STATUSAPAGADOCOMPU" && comandoSeparado.Length > 1)
+                {
+                    var compuEncontrada = ListaComputadoras.FirstOrDefault(x => x.Identificador.ToUpper() == comandoSeparado[1]);
+                    if (compuEncontrada != null)
+                    {
+                        compuEncontrada.Encendida = false;
+                        compuEncontrada.Conexion = false;
+                        compuEncontrada.UltimaVez = DateOnly.FromDateTime(DateTime.Now);
+                        ActualizarListaComputadoras?.Invoke();
+                    }
+                }
+                    if (comandoSeparado[0] == "RESPUESTA" && comandoSeparado.Length > 1)
                 {
                     var compuEncontrada = ListaComputadoras.FirstOrDefault(x => x.Identificador.ToUpper() == comandoSeparado[1]);
                     try
@@ -213,10 +232,8 @@ public class ServidorService
         if (compuEncontrada != null)
         {
             UltimaComputadora = compuEncontrada;
-            compuEncontrada.Encendida = false;
-            compuEncontrada.Conexion = false;
             EnviarMensaje("APAGAR", compuEncontrada);
-            ActualizarListaComputadoras?.Invoke();
+            //ActualizarListaComputadoras?.Invoke();
         }
     }
 
@@ -237,7 +254,11 @@ public class ServidorService
         {
             compu.Encendida = false;
             compu.Conexion = false;
-            if(Inicializar==true){
+            //if(Inicializar==true){
+            //    compu.Histroial = true;
+            //}
+            if (compu.UltimaVez.AddDays(15) < DateOnly.FromDateTime(DateTime.Now))
+            {
                 compu.Histroial = true;
             }
             EnviarMensaje("STATUS", compu);
@@ -251,12 +272,12 @@ public class ServidorService
         {
             compu.Encendida = false;
             compu.Conexion = false;
-            if (Inicializar == true)
+            if (compu.UltimaVez.AddDays(15) < DateOnly.FromDateTime(DateTime.Now))
             {
                 compu.Histroial = true;
             }
-           
-           
+
+
         }
         
         Servidor.EnableBroadcast = true;
@@ -305,6 +326,41 @@ public class ServidorService
     }
 
 
+    private void TimerStatusTick(object? sender, EventArgs e)
+    {
+        // 1. Enviar STATUS a todas las máquinas
+        VerificarStatusGlobal(false);
 
+        // 2. Verificar timeout de respuesta (40s)
+        foreach (var pc in ListaComputadoras)
+        {
+            
+
+            if (pc.UltimaVez.ToDateTime(TimeOnly.MinValue).AddSeconds(40) < DateTime.Now)
+            {
+                pc.Encendida = false;
+                pc.Conexion = false;
+            }
+
+            if (pc.UltimaVez.AddDays(15) < DateOnly.FromDateTime(DateTime.Now))
+            {
+                pc.Histroial = true;
+            }
+
+        }
+
+        ActualizarListaComputadoras?.Invoke();
+    }
+
+    public void EliminarComputadora(string Identificador)
+    {
+        var compuEncontrada = ListaComputadoras.FirstOrDefault(x => x.Identificador == Identificador );
+        if (compuEncontrada != null)
+        {
+            UltimaComputadora = compuEncontrada;
+            ListaComputadoras.Remove(compuEncontrada);
+            ActualizarListaComputadoras?.Invoke();
+        }
+    }
 
 }

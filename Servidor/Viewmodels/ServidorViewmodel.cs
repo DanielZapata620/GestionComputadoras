@@ -37,6 +37,7 @@ namespace Servidor.Viewmodels
         }
 
         public ICommand VerificarInternetCommand {get; set; }
+        public ICommand EliminarCommand {get; set; }
         public ICommand FiltrarCommand {get; set; }
         public ICommand RefrescarCommand {get; set; }
         public ICommand CambiarVistaCommand {get; set; }
@@ -57,6 +58,7 @@ namespace Servidor.Viewmodels
             servidorService.VerificarConexion += ServidorService_VerificarConexion;//
 
             VerificarInternetCommand = new RelayCommand<string>(VerificarInternet);
+            EliminarCommand = new RelayCommand<string>(Eliminar);
             FiltrarCommand = new RelayCommand<string>(Filtrar);
             RefrescarCommand = new RelayCommand(Refrecsar);
             CambiarVistaCommand = new RelayCommand<string>(CambiarVista);
@@ -69,6 +71,11 @@ namespace Servidor.Viewmodels
             servidorService.ObtenerLaboratorios();
             LabSeleccionado = ListaLaboratorios.FirstOrDefault();
 
+        }
+
+        private void Eliminar(string? identificador)
+        {
+            servidorService.EliminarComputadora(identificador);
         }
 
         private void Refrecsar()
@@ -103,20 +110,34 @@ namespace Servidor.Viewmodels
 
         private void ServidorService_ActualizarListaLaboratorios()
         {
-            VistaActual = "Panel";
-            PropertyChanged?.Invoke(this, new(nameof(VistaActual)));
             hiloUI.BeginInvoke(() =>
             {
                 ListaLaboratorios.Clear();
-                servidorService.ListaLaboratorios.ForEach(x => ListaLaboratorios.Add(x));
-                ListaLaboratorios.OrderBy(x => x);
-                servidorService.filtrarComputadorasPorLaboratorio(LabSeleccionado);
+
+                servidorService.ListaLaboratorios
+                    .ForEach(x => ListaLaboratorios.Add(x));
+
+                if (VistaActual == "Historial")
+                {
+                    servidorService.MostrarHistrial();
+                }
+                else
+                {
+                    servidorService.filtrarComputadorasPorLaboratorio(LabSeleccionado);
+                }
             });
         }
 
         private void ServidorService_ActualizarListaComputadoras()
         {
-            servidorService.filtrarComputadorasPorLaboratorio(LabSeleccionado);
+            if (VistaActual == "Historial")
+            {
+                servidorService.MostrarHistrial();
+            }
+            else
+            {
+                servidorService.filtrarComputadorasPorLaboratorio(LabSeleccionado);
+            }
         }
 
         private void ApagarComputadora(string? identificador)

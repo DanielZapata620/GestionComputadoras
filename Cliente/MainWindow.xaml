@@ -50,6 +50,14 @@
                             </Setter>
                         </DataTrigger>
 
+                        <DataTrigger Binding="{Binding VistaActual}" Value="Apagar">
+                            <Setter Property="Content">
+                                <Setter.Value>
+                                    <views:ApagarView></views:ApagarView>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+
                     </Style.Triggers>
 
                 </Style>

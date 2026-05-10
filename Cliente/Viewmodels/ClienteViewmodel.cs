@@ -17,10 +17,13 @@ namespace Cliente.Viewmodels
 
         public ICommand RegistrarCommand { get; set; }
         public ICommand ReintentarCommand { get; set; }
+        public ICommand CancelarApagadoCommand { get; set; }
 
         public string Error { get; set; }
 
         public Computadora Compu { get; set; } = new();
+
+        public int Contador { get; set; }
 
         public string VistaActual { get; set; }
         public string IpServidor { get; set; }
@@ -35,14 +38,37 @@ namespace Cliente.Viewmodels
             hiloUI = Dispatcher.CurrentDispatcher;
             RegistrarCommand = new RelayCommand(Conectar);
             ReintentarCommand = new RelayCommand(Reintentar);
+            CancelarApagadoCommand = new RelayCommand(CancelarApagado);
             service.Aprobado += Service_Aprobado;
             service.computadoraCargada += Service_computadoraCargada;
             service.ServidorApagado += Service_ServidorApagado;
             service.EnviarError += Service_EnviarError;
             service.InvalidarIp += Service_InvalidarIp;
+            service.ApagarComputadora += Service_ApagarComputadora;
+            service.ActualizarTimer += Service_ActualizarTimer;
 
             service.InicializarCliente();
 
+        }
+
+        private void CancelarApagado()
+        {
+            service.CancelarApagado();
+            
+        }
+
+        private void Service_ActualizarTimer(int tiempo)
+        {
+            Contador = tiempo;
+            PropertyChanged?.Invoke(this, new(nameof(Contador)));
+        }
+
+        private void Service_ApagarComputadora()
+        {
+            Contador = 10;
+            VistaActual = "Apagar";
+            PropertyChanged?.Invoke(this, new(nameof(VistaActual)));
+            PropertyChanged?.Invoke(this, new(nameof(Contador)));
         }
 
         private void Service_InvalidarIp()
