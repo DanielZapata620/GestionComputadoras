@@ -81,7 +81,7 @@ namespace Cliente.Viewmodels
 
         private void Service_EnviarError()
         {
-            Error= "Eliga otro identificador ya que el que intenta usar ya se encuentra registrado";
+            Error= "La MAC de esta computadora ya se encuentra registrada";
             PropertyChanged?.Invoke(this, new(nameof(Error)));
             VistaActual = "Registrar";
             PropertyChanged?.Invoke(this, new(nameof(VistaActual)));

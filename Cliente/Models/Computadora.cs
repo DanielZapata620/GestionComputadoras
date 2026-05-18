@@ -10,7 +10,10 @@ namespace Cliente.Models
         public string PC { get; set; } = null!;
         public string LAB { get; set; } = null!;
 
+        public string Nombre { get; set; } = null!;
         public string Identificador { get; set; } = null!;
+
+
 
         public bool RegistradaEnELServidor { get; set; }
 

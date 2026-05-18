@@ -86,6 +86,7 @@ public class ServidorService
 
                         Computadora compu = new()
                         {
+                            Identificador =  comandoSeparado[1] ,
                             NumLaboratorio = $"{comandoSeparado[2]}",
                             NumPc = $"PC{comandoSeparado[3]}",
                             IP = clientEP.Address.ToString(),

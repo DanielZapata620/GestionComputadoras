@@ -35,7 +35,7 @@
                        Opacity="1"/>
             </Image.Effect>
         </Image>
-        <TextBlock Background="#5C4F4F" Grid.Row="1" Grid.ColumnSpan="3" Text="{Binding Compu.Identificador}" Foreground="White" FontSize="25" FontWeight="Bold" TextAlignment="Center" Padding="35" >
+        <TextBlock Background="#5C4F4F" Grid.Row="1" Grid.ColumnSpan="3" Text="{Binding Compu.Nombre}" Foreground="White" FontSize="25" FontWeight="Bold" TextAlignment="Center" Padding="35" >
 
         </TextBlock>
     </Grid>

@@ -220,7 +220,10 @@ namespace Cliente.Service
                 Compu.PC = Compu.PC.Replace('|', '\0');
 
                 Computadora = Compu;
-                Compu.Identificador = $"{Compu.LAB.ToUpper()}-PC{Compu.PC.ToUpper()}";
+
+                //Compu.Identificador = $"{Compu.LAB.ToUpper()}-PC{Compu.PC.ToUpper()}";
+                Computadora.Identificador = ObtenerMAC();
+                Compu.Nombre = $"{Compu.LAB.ToUpper()}-PC{Compu.PC.ToUpper()}";
                 ServerIp = ipServidor;
                 Compu.IpServidor = ServerIp.ToString();
 
@@ -300,6 +303,19 @@ namespace Cliente.Service
                 contador--;
                 ActualizarTimer?.Invoke(contador);
             }
+        }
+
+        private string ObtenerMAC()
+        {
+            return NetworkInterface
+                .GetAllNetworkInterfaces()
+                .Where(x =>
+                    x.OperationalStatus ==
+                    OperationalStatus.Up &&
+                    x.NetworkInterfaceType !=
+                    NetworkInterfaceType.Loopback)
+                .Select(x => x.GetPhysicalAddress().ToString())
+                .FirstOrDefault() ?? "SINMAC";
         }
     }
 }

@@ -22,5 +22,7 @@ namespace Cliente.Views
         {
             InitializeComponent();
         }
+
+       
     }
 }

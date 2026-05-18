@@ -74,10 +74,16 @@
            VerticalAlignment="Center"
            TextAlignment="Center"/>
 
-            <Button Grid.Column="6"
+            <Button Background="DarkRed" Foreground="White" Grid.Column="6"  Margin="15"
                 Command="{Binding DataContext.EliminarCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                 CommandParameter="{Binding Identificador}">
                 ELIMINAR
+
+                <Button.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="CornerRadius" Value="3"/>
+                    </Style>
+                </Button.Resources>
             </Button>
 
         </Grid>
