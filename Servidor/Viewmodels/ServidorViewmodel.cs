@@ -42,6 +42,12 @@ namespace Servidor.Viewmodels
         public ICommand RefrescarCommand {get; set; }
         public ICommand CambiarVistaCommand {get; set; }
 
+        public ICommand ConfirmarEliminarCommand { get; set; }
+        public ICommand CancelarEliminarCommand { get; set; }
+
+        public bool MostrarEliminar { get; set; }
+        public string? IdentificadorEliminar { get; set; }
+
         public string VistaActual { get; set; } 
         public ICommand ApagarCommand {get; set; }
 
@@ -62,6 +68,8 @@ namespace Servidor.Viewmodels
             FiltrarCommand = new RelayCommand<string>(Filtrar);
             RefrescarCommand = new RelayCommand(Refrecsar);
             CambiarVistaCommand = new RelayCommand<string>(CambiarVista);
+            ConfirmarEliminarCommand = new RelayCommand(ConfirmarEliminar);
+            CancelarEliminarCommand = new RelayCommand(CancelarEliminar);
 
             servidorService.ActualizarListaComputadoras += ServidorService_ActualizarListaComputadoras;
             servidorService.ActualizarListaLaboratorios += ServidorService_ActualizarListaLaboratorios;
@@ -75,7 +83,35 @@ namespace Servidor.Viewmodels
 
         private void Eliminar(string? identificador)
         {
-            servidorService.EliminarComputadora(identificador);
+            if (string.IsNullOrWhiteSpace(identificador))
+            {
+                return;
+            }
+
+            IdentificadorEliminar = identificador;
+            MostrarEliminar = true;
+
+            PropertyChanged?.Invoke(this, new(nameof(IdentificadorEliminar)));
+            PropertyChanged?.Invoke(this, new(nameof(MostrarEliminar)));
+        }
+
+        private void ConfirmarEliminar()
+        {
+            if (!string.IsNullOrWhiteSpace(IdentificadorEliminar))
+            {
+                servidorService.EliminarComputadora(IdentificadorEliminar);
+            }
+
+            CancelarEliminar();
+        }
+
+        private void CancelarEliminar()
+        {
+            MostrarEliminar = false;
+            IdentificadorEliminar = null;
+
+            PropertyChanged?.Invoke(this, new(nameof(MostrarEliminar)));
+            PropertyChanged?.Invoke(this, new(nameof(IdentificadorEliminar  )));
         }
 
         private void Refrecsar()

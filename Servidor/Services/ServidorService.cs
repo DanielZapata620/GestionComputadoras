@@ -76,25 +76,49 @@ public class ServidorService
                 {
                     if (ListaComputadoras.Any(x => x.Identificador == comandoSeparado[1]))
                     {
-                        
-                        var comandoEnviar = $"RECHAZAR";
+
+                        //var comandoEnviar = $"RECHAZAR";
+                        //var compuEncontrada = ListaComputadoras.FirstOrDefault(x => x.Identificador == comandoSeparado[1]);
+                        //EnviarMensaje(comandoEnviar, compuEncontrada);
+
                         var compuEncontrada = ListaComputadoras.FirstOrDefault(x => x.Identificador == comandoSeparado[1]);
-                        EnviarMensaje(comandoEnviar, compuEncontrada);
+
+                        if (compuEncontrada != null)
+                        {
+                            compuEncontrada.NumLaboratorio = comandoSeparado[2];
+                            compuEncontrada.NumPc = $"PC{comandoSeparado[3]}";
+                            compuEncontrada.IP = clientEP.Address.ToString();
+                            compuEncontrada.Puerto = clientEP.Port;
+                            compuEncontrada.UltimaVez = DateTime.Now;
+                            compuEncontrada.Encendida = true;
+                            compuEncontrada.Conexion = comandoSeparado[4] == "True";
+                            compuEncontrada.Histroial = false;
+
+                            EnviarMensaje("APROBAR", compuEncontrada);
+
+                            ComputadoraRegistrada?.Invoke(compuEncontrada.NumLaboratorio);
+                            ActualizarListaComputadoras?.Invoke();
+
+                            string json = JsonSerializer.Serialize(ListaComputadoras);
+                            File.WriteAllText("computadoras.json", json);
+                        }
+                 
+
                     }
                     else
                     {
 
                         Computadora compu = new()
                         {
-                            Identificador =  comandoSeparado[1] ,
+                            Identificador = comandoSeparado[1],
                             NumLaboratorio = $"{comandoSeparado[2]}",
                             NumPc = $"PC{comandoSeparado[3]}",
                             IP = clientEP.Address.ToString(),
                             Puerto = clientEP.Port,
                             FechaRegistro = DateOnly.FromDateTime(DateTime.Now),
-                            UltimaVez = DateOnly.FromDateTime(DateTime.Now),
+                            UltimaVez = DateTime.Now,
                             Encendida = true,
-                            Conexion= comandoSeparado[4] == "True" ? true : false,
+                            Conexion = comandoSeparado[4] == "True" ? true : false,
                             Histroial = false,
 
                         };
@@ -123,7 +147,7 @@ public class ServidorService
                     {
                         compuEncontrada.Encendida = false;
                         compuEncontrada.Conexion = false;
-                        compuEncontrada.UltimaVez = DateOnly.FromDateTime(DateTime.Now);
+                        compuEncontrada.UltimaVez = DateTime.Now;
                         ActualizarListaComputadoras?.Invoke();
                     }
                 }
@@ -139,7 +163,7 @@ public class ServidorService
                             compuEncontrada.Puerto = clientEP.Port;
                             compuEncontrada.Conexion = comandoSeparado[2] == "True" ? true : false;
                             compuEncontrada.Encendida = true;
-                            compuEncontrada.UltimaVez = DateOnly.FromDateTime(DateTime.Now);
+                            compuEncontrada.UltimaVez = DateTime.Now;
                             compuEncontrada.Histroial = false;
                             ActualizarListaComputadoras?.Invoke();
 
@@ -167,7 +191,7 @@ public class ServidorService
             {
                 UltimaComputadora.Encendida = false;
                 UltimaComputadora.Conexion = false;
-                UltimaComputadora.UltimaVez = DateOnly.FromDateTime(DateTime.Now);
+                UltimaComputadora.UltimaVez = DateTime.Now;
               
                 ActualizarListaComputadoras?.Invoke();
             }
@@ -213,8 +237,8 @@ public class ServidorService
             try
             {
                 UltimaComputadora = compuEncontrada;
-                compuEncontrada.Encendida = false;
-                compuEncontrada.Conexion = false;
+                //compuEncontrada.Encendida = false;
+                //compuEncontrada.Conexion = false;
                 EnviarMensaje("CONEXION", compuEncontrada);
             }
             catch (SocketException)
@@ -253,12 +277,12 @@ public class ServidorService
     {
         foreach (var compu in ListaComputadoras)
         {
-            compu.Encendida = false;
-            compu.Conexion = false;
+            //compu.Encendida = false;
+            //compu.Conexion = false;
             //if(Inicializar==true){
             //    compu.Histroial = true;
             //}
-            if (compu.UltimaVez.AddDays(15) < DateOnly.FromDateTime(DateTime.Now))
+            if (compu.UltimaVez.AddDays(15) < DateTime.Now)
             {
                 compu.Histroial = true;
             }
@@ -273,7 +297,7 @@ public class ServidorService
         {
             compu.Encendida = false;
             compu.Conexion = false;
-            if (compu.UltimaVez.AddDays(15) < DateOnly.FromDateTime(DateTime.Now))
+            if (compu.UltimaVez.AddDays(15) < DateTime.Now)
             {
                 compu.Histroial = true;
             }
@@ -335,15 +359,15 @@ public class ServidorService
         // 2. Verificar timeout de respuesta (40s)
         foreach (var pc in ListaComputadoras)
         {
-            
 
-            if (pc.UltimaVez.ToDateTime(TimeOnly.MinValue).AddSeconds(40) < DateTime.Now)
+
+            if (pc.UltimaVez.AddSeconds(40) < DateTime.Now)
             {
                 pc.Encendida = false;
                 pc.Conexion = false;
             }
 
-            if (pc.UltimaVez.AddDays(15) < DateOnly.FromDateTime(DateTime.Now))
+            if (pc.UltimaVez.AddDays(15) < DateTime.Now)
             {
                 pc.Histroial = true;
             }
@@ -360,6 +384,10 @@ public class ServidorService
         {
             UltimaComputadora = compuEncontrada;
             ListaComputadoras.Remove(compuEncontrada);
+
+            string json = JsonSerializer.Serialize(ListaComputadoras);
+            File.WriteAllText("computadoras.json", json);
+
             ActualizarListaComputadoras?.Invoke();
         }
     }

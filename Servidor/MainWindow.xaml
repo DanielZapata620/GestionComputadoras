@@ -8,7 +8,8 @@
         xmlns:local="clr-namespace:Servidor"
         x:Name="ventana"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" >
+        Title="MainWindow" Height="450" Width="800"   WindowState="Maximized"
+         >
 
     <Window.DataContext>
         <vm:ServidorViewmodel></vm:ServidorViewmodel>

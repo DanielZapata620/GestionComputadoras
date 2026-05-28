@@ -17,7 +17,7 @@ namespace Servidor.Models
         public int Puerto { get; set; }
 
         public DateOnly FechaRegistro { get; set; }
-        public DateOnly UltimaVez { get; set; }
+        public DateTime UltimaVez { get; set; }
         public bool Encendida { get; set; }
         public bool Conexion { get; set; } 
         

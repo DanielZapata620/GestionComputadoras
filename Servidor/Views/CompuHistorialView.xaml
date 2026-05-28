@@ -69,7 +69,7 @@
            TextAlignment="Center"/>
 
             <TextBlock Grid.Column="5"
-           Text="{Binding UltimaVez, StringFormat=ULTIMA CONEXION EL {0}}"
+          Text="{Binding UltimaVez, StringFormat=ULTIMA CONEXION EL {0:dd/MM/yyyy}}"
            Foreground="White"
            VerticalAlignment="Center"
            TextAlignment="Center"/>

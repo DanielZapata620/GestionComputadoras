@@ -30,6 +30,7 @@ namespace Cliente.Service
 
 
         int contador;
+        bool pantallApagado;
 
         public event Action EnviarError;
         public event Action InvalidarIp;
@@ -130,7 +131,10 @@ namespace Cliente.Service
 
                         string json = JsonSerializer.Serialize(Computadora);
                         File.WriteAllText("computadora.json", json);
-                        Aprobado?.Invoke();
+                        if (!pantallApagado)
+                        {
+                            Aprobado?.Invoke();
+                        }
 
                     }
                     if (comandoSeparado[0] == "CONEXION")
@@ -139,7 +143,10 @@ namespace Cliente.Service
 
                         var comandoRespuesta = $"RESPUESTA|{Computadora.Identificador}|{Conexion}";
                         EnviarMensaje(comandoRespuesta);
-                        Aprobado?.Invoke();
+                        if (!pantallApagado)
+                        {
+                            Aprobado?.Invoke();
+                        }
 
                     }
 
@@ -147,6 +154,7 @@ namespace Cliente.Service
                     {
 
                         contador = 10;
+                        pantallApagado = true;
                         ApagarComputadora?.Invoke();
                         timer.Start();
 
@@ -167,7 +175,10 @@ namespace Cliente.Service
 
                             var comandoRespuesta = $"RESPUESTA|{Computadora.Identificador}|{Conexion}";
                             EnviarMensaje(comandoRespuesta);
-                            Aprobado?.Invoke();
+                            if (!pantallApagado)
+                            {
+                                Aprobado?.Invoke();
+                            }
                         }
 
                     }
@@ -177,7 +188,11 @@ namespace Cliente.Service
                 {
                     string json = JsonSerializer.Serialize(Computadora);
                     File.WriteAllText("computadora.json", json);
-                    ServidorApagado?.Invoke();
+
+                    if (!pantallApagado)
+                    {
+                        ServidorApagado?.Invoke();
+                    }
                 }
 
 
@@ -260,16 +275,14 @@ namespace Cliente.Service
                 IPEndPoint remoto = new IPEndPoint(ServerIp, port);
                 byte[] buffer = Encoding.UTF8.GetBytes(comando);
                 Cliente.Send(buffer, buffer.Length, remoto);
-                ServidorApagado?.Invoke();
             }
             catch (SocketException)
             {
-
-                ServidorApagado?.Invoke();
+                if (!pantallApagado)
+                {
+                    ServidorApagado?.Invoke();
+                }
             }
-
-
-
         }
 
         public void Reconectar()
@@ -283,6 +296,7 @@ namespace Cliente.Service
 
         public void CancelarApagado()
         {
+            pantallApagado = false;
             timer.Stop();
             Aprobado?.Invoke();
 
@@ -296,7 +310,10 @@ namespace Cliente.Service
             {
                 timer.Stop();
                 var comandoRespuesta = $"STATUSAPAGADOCOMPU|{Computadora.Identificador}";
+               
                 EnviarMensaje(comandoRespuesta);
+
+                Process.Start(new ProcessStartInfo("shutdown", "/s /t 0"));
             }
             else
             {

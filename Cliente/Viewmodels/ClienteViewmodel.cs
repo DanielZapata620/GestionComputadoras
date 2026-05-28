@@ -25,6 +25,8 @@ namespace Cliente.Viewmodels
 
         public int Contador { get; set; }
 
+        bool pantallaApagado;
+
         public string VistaActual { get; set; }
         public string IpServidor { get; set; }
         ClienteService service = new();
@@ -53,6 +55,7 @@ namespace Cliente.Viewmodels
 
         private void CancelarApagado()
         {
+            pantallaApagado = false;
             service.CancelarApagado();
             
         }
@@ -65,6 +68,7 @@ namespace Cliente.Viewmodels
 
         private void Service_ApagarComputadora()
         {
+            pantallaApagado = true;
             Contador = 10;
             VistaActual = "Apagar";
             PropertyChanged?.Invoke(this, new(nameof(VistaActual)));
@@ -111,12 +115,21 @@ namespace Cliente.Viewmodels
 
         private void Service_ServidorApagado()
         {
+
+            if (pantallaApagado)
+            {
+                return;
+            }
             VistaActual = "ServidorApagado";
             PropertyChanged?.Invoke(this, new(nameof(VistaActual)));
         }
 
         private void Service_Aprobado()
         {
+            if (pantallaApagado)
+            {
+                return;
+            }
             VistaActual = "ServidorEncendido";
             PropertyChanged?.Invoke(this, new(nameof(VistaActual)));    
         }

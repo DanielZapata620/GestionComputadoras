@@ -7,6 +7,10 @@
              xmlns:local="clr-namespace:Servidor"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"  Background="#1E1B1B">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </UserControl.Resources>
     <Grid>
 
         
@@ -96,5 +100,63 @@
 
         </Grid>
 
+        <Grid Grid.RowSpan="2"
+      Background="#99000000"
+      Visibility="{Binding MostrarEliminar, Converter={StaticResource BoolToVisibilityConverter}}">
+
+            <Border Width="360"
+            Padding="25"
+            Background="#2B1F1F"
+            BorderBrush="WhiteSmoke"
+            BorderThickness="1"
+            CornerRadius="5"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center">
+
+                <StackPanel>
+
+                    <TextBlock Text="¿Está seguro de eliminar la computadora?"
+                       Foreground="White"
+                       FontSize="20"
+                       FontWeight="Bold"
+                       TextWrapping="Wrap"
+                       TextAlignment="Center"
+                       Margin="0,0,0,12"/>
+
+                    <TextBlock Text="Esta acción no se puede revertir."
+                       Foreground="#D6D6D6"
+                       FontSize="14"
+                       TextWrapping="Wrap"
+                       TextAlignment="Center"
+                       Margin="0,0,0,20"/>
+
+                    <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center">
+
+                        <Button Content="SÍ"
+                        Width="130"
+                        Height="35"
+                                  Margin="0,0,10,0"
+                        Background="DarkRed"
+                        Foreground="White"
+                        BorderThickness="0"
+                        Command="{Binding ConfirmarEliminarCommand}"/>
+
+                        <Button Content="NO"
+                        Width="100"
+                        Height="35"
+                      
+                        Background="#5C4F4F"
+                        Foreground="White"
+                        BorderThickness="0"
+                        Command="{Binding CancelarEliminarCommand}"/>
+
+                    </StackPanel>
+
+                </StackPanel>
+
+            </Border>
+
+        </Grid>
     </Grid>
 </UserControl>
